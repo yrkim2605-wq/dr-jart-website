@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 const Hero = () => {
   return (
     <Box component="section" sx={{ position: 'relative', minHeight: 900}}>
-      <Typography sx={{ fontSize: 120, fontWeight: 800 }}>Dr.</Typography>
+      <Typography sx={{ fontSize: 150, fontWeight: 800 }}>Dr.</Typography>
 
       <Box
   sx={{
@@ -20,7 +20,7 @@ const Hero = () => {
 
       <Typography
         sx={{
-          fontSize: 120,
+          fontSize: 150,
           fontWeight: 800,
           position: 'absolute',
           right: 32,
