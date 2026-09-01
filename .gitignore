@@ -15,6 +15,11 @@ dist-ssr
 # 참고용 자료 (실제 사이트 코드 아님)
 reference-build/
 *.pdf
+/*.png
+/*.jpg
+/*.jpeg
+/*.avif
+/*.webp
 
 # Editor directories and files
 .vscode/*
