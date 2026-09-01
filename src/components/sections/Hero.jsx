@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import AddIcon from '@mui/icons-material/Add'
 
 const Hero = () => {
   return (
@@ -32,7 +33,7 @@ const Hero = () => {
         <Typography
           sx={{
             position: 'absolute',
-            top: 7,
+            top: 0,
             left: -245,
             width: 150,
             fontSize: 13,
@@ -61,14 +62,19 @@ const Hero = () => {
         <Box
           sx={{
             position: 'absolute',
-            top: 98,
+            top: 96,
             left: -29,
             width: 16,
             height: 15,
             border: '1.5px solid black',
             bgcolor: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
-        />
+        >
+          <Box sx={{ width: 6, height: 6, bgcolor: 'black' }} />
+        </Box>
 
         {/* 1회 사용 효과 안내 문구 + 연결선 (오른쪽, 잡 쪽 가로 → 대각선 → 텍스트) */}
         <Typography
@@ -109,12 +115,14 @@ const Hero = () => {
           <Box sx={{ width: '1px', height: 400, bgcolor: 'secondary.main' }} />
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-          <Typography sx={{ fontSize: 16, fontWeight: 300, lineHeight: 1.2, color: 'secondary.main' }}>+</Typography>
-          <Typography sx={{ fontSize: 16, fontWeight: 300, lineHeight: 1.2, color: 'secondary.main' }}>+</Typography>
+          <Box sx={{ height: 34, overflow: 'visible', transform: 'translateY(-15px)' }}>
+            <AddIcon sx={{ fontSize: 50, color: '#d9d9d9', stroke: 'currentColor', strokeWidth: 1, display: 'block' }} />
+            <AddIcon sx={{ fontSize: 50, color: '#d9d9d9', stroke: 'currentColor', strokeWidth: 1, display: 'block' }} />
+          </Box>
           <Typography
             sx={{
-              fontSize: 12,
-              fontWeight: 700,
+              fontSize: 14,
+              fontWeight: 500,
               letterSpacing: 1,
               lineHeight: 1.6,
               color: 'secondary.main',

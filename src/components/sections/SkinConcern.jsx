@@ -2,6 +2,20 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 
+const MagnifierIcon = (props) => (
+  <Box
+    component="svg"
+    viewBox="0 0 40 40"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <circle cx="17" cy="17" r="11" stroke="black" strokeWidth="3" />
+    <circle cx="17" cy="17" r="7" stroke="black" strokeWidth="1" opacity="0.35" />
+    <line x1="25.5" y1="25.5" x2="36" y2="36" stroke="black" strokeWidth="4" strokeLinecap="round" />
+  </Box>
+)
+
 // width는 각 상품 사진의 실제 가로세로 비율 기준으로, 지름 112px 원의 대각선 안에
 // 딱 들어오도록 계산한 값 (사진마다 비율이 달라서 하나의 % 값으로는 못 맞춤)
 const CONCERNS = [
@@ -15,9 +29,12 @@ const CONCERNS = [
 const SkinConcern = ({ selectedConcern, onSelectConcern }) => {
   return (
     <Box component="section" sx={{ pt: 25 }}>
-      <Typography sx={{ fontSize: 40, fontWeight: 500, textAlign: 'center' }}>
-        What&apos;s your skin concern?
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5 }}>
+        <Typography sx={{ fontSize: 40, fontWeight: 500, textAlign: 'center' }}>
+          What&apos;s your skin concern?
+        </Typography>
+        <MagnifierIcon sx={{ width: 32, height: 32, transform: 'scaleX(-1)' }} />
+      </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mt: 12 }}>
         {CONCERNS.map((concern) => (

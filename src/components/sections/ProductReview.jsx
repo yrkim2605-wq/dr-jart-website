@@ -32,7 +32,7 @@ const ProductReview = () => {
             alignItems: 'center',
             gap: 3,
             width: 'max-content',
-            animation: 'productReviewScroll 18s linear infinite',
+            animation: 'productReviewScroll 9s linear infinite',
             '@keyframes productReviewScroll': {
               from: { transform: 'translateX(0)' },
               to: { transform: 'translateX(-50%)' },

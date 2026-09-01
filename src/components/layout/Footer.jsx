@@ -30,19 +30,19 @@ const LEGAL_LINES = [
 
 const Footer = () => {
   return (
-    <Box component="footer" sx={{ bgcolor: 'black', color: 'white', mt: 30 }}>
+    <Box component="footer" sx={{ bgcolor: 'black', color: 'white', mt: 20 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 6, px: 6, pt: 10, pb: 8 }}>
         <Box sx={{ maxWidth: 640, display: 'flex', flexDirection: 'column' }}>
-          <Typography sx={{ fontSize: 40, fontWeight: 900 }}>MASK</Typography>
+          <Typography sx={{ fontSize: 150, fontWeight: 900, lineHeight: 1 }}>MASK</Typography>
           <Typography sx={{ fontSize: 40, fontWeight: 900, lineHeight: 1.3, mt: 1 }}>
             <Box component="span" sx={{ display: 'block' }}>피부고민별 피부타입을</Box>
             <Box component="span" sx={{ display: 'block' }}>위한 혁신적인 마스크</Box>
           </Typography>
 
-          <Typography sx={{ fontSize: 13, fontWeight: 400, color: 'white', mt: 4, pl: 32 }}>
+          <Typography sx={{ fontSize: 13, fontWeight: 400, color: 'white', mt: 4 }}>
             닥터자르트의 독창적인 마스크를 만나보세요.
           </Typography>
-          <Typography sx={{ fontSize: 13, fontWeight: 400, color: 'white', lineHeight: 1.6, mt: 1, pl: 26 }}>
+          <Typography sx={{ fontSize: 13, fontWeight: 400, color: 'white', lineHeight: 1.6, mt: 1 }}>
             <Box component="span" sx={{ display: 'block' }}>건조함, 민감함, 푸석함 등</Box>
             <Box component="span" sx={{ display: 'block' }}>피부고민별 맞춤 케어를 경험해보세요.</Box>
           </Typography>
