@@ -33,11 +33,11 @@ const Hero = () => {
         <Typography
           sx={{
             position: 'absolute',
-            top: 0,
+            top: 5,
             left: -245,
             width: 150,
             fontSize: 13,
-            lineHeight: 1.6,
+            lineHeight: 1.2,
             textAlign: 'left',
           }}
         >
@@ -45,20 +45,14 @@ const Hero = () => {
           <br />
           결합된 CICAPAIR
         </Typography>
-        <Box sx={{ position: 'absolute', top: 48, left: -245, width: 139, height: '1px', bgcolor: 'black' }} />
         <Box
-          sx={{
-            position: 'absolute',
-            top: 48,
-            left: -105,
-            width: 61,
-            height: '1px',
-            bgcolor: 'black',
-            transformOrigin: 'left center',
-            transform: 'rotate(68deg)',
-          }}
-        />
-        <Box sx={{ position: 'absolute', top: 106, left: -83, width: 54, height: '1px', bgcolor: 'black' }} />
+          component="svg"
+          width={216}
+          height={110}
+          sx={{ position: 'absolute', top: 0, left: -245, overflow: 'visible' }}
+        >
+          <polyline points="0,48 139,48 162,106 216,106" fill="none" stroke="black" strokeWidth="1" />
+        </Box>
         <Box
           sx={{
             position: 'absolute',
@@ -84,7 +78,7 @@ const Hero = () => {
             left: 365,
             width: 180,
             fontSize: 13,
-            lineHeight: 1.6,
+            lineHeight: 1.2,
             textAlign: 'right',
           }}
         >
@@ -92,42 +86,36 @@ const Hero = () => {
           <br />
           피부를 빠르게 진정
         </Typography>
-        <Box sx={{ position: 'absolute', top: 285, left: 351, width: 16, height: '1px', bgcolor: 'black' }} />
         <Box
-          sx={{
-            position: 'absolute',
-            top: 285,
-            left: 367,
-            width: 53,
-            height: '1px',
-            bgcolor: 'black',
-            transformOrigin: 'left center',
-            transform: 'rotate(-63deg)',
-          }}
-        />
-        <Box sx={{ position: 'absolute', top: 238, left: 391, width: 150, height: '1px', bgcolor: 'black' }} />
+          component="svg"
+          width={190}
+          height={285}
+          sx={{ position: 'absolute', top: 0, left: 351, overflow: 'visible' }}
+        >
+          <polyline points="0,285 16,285 40,238 190,238" fill="none" stroke="black" strokeWidth="1" />
+        </Box>
       </Box>
 
       {/* 오른쪽 세로 사이드바: + + | CICAPAIR+ FORMULA 01 REDNESS CARE */}
-      <Box sx={{ position: 'absolute', top: 160, right: 180, display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 1 }}>
+      <Box sx={{ position: 'absolute', top: 110, right: 220, display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 1 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Box sx={{ width: '3px', height: 110, bgcolor: 'black', mt: '-15px' }} />
           <Box sx={{ width: '1px', height: 400, bgcolor: 'secondary.main' }} />
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
           <Box sx={{ height: 34, overflow: 'visible', transform: 'translateY(-15px)' }}>
-            <AddIcon sx={{ fontSize: 50, color: '#d9d9d9', stroke: 'currentColor', strokeWidth: 1, display: 'block' }} />
-            <AddIcon sx={{ fontSize: 50, color: '#d9d9d9', stroke: 'currentColor', strokeWidth: 1, display: 'block' }} />
+            <AddIcon sx={{ fontSize: 40, color: '#d9d9d9', stroke: 'currentColor', strokeWidth: 2.5, display: 'block' }} />
+            <AddIcon sx={{ fontSize: 40, color: '#d9d9d9', stroke: 'currentColor', strokeWidth: 2.5, display: 'block' }} />
           </Box>
           <Typography
             sx={{
               fontSize: 14,
-              fontWeight: 500,
+              fontWeight: 400,
               letterSpacing: 1,
-              lineHeight: 1.6,
+              lineHeight: 1.2,
               color: 'secondary.main',
               writingMode: 'vertical-rl',
-              mt: '63px',
+              mt: '45px',
             }}
           >
             CICAPAIR+
@@ -141,8 +129,8 @@ const Hero = () => {
 
       {/* 왼쪽 하단 브랜드 태그라인 */}
       <Box sx={{ position: 'absolute', left: '50px', bottom: 80 }}>
-        <Typography sx={{ fontSize: 15, fontWeight: 700 }}>Dr.Jart+</Typography>
-        <Typography sx={{ fontSize: 13, fontWeight: 700, mt: 3 }}>
+        <Typography sx={{ fontSize: 15, fontWeight: 500 }}>Dr.Jart+</Typography>
+        <Typography sx={{ fontSize: 13, fontWeight: 500, mt: 3 }}>
           KOREAN SKIN BARRIER EXPERTS.
           <br />
           DREAM INSPIRED. ARTFULLY DELIVERED.

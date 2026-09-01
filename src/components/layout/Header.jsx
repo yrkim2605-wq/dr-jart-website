@@ -73,15 +73,15 @@ const Header = () => {
       </Box>
       )}
 
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pt: 5, px: 4.5 }}>
-        <Typography variant="h1" sx={{ fontWeight: 700, fontSize: 33, margin: 0, color: 'black' }}>Dr.jart+</Typography>
-        <Box sx={{ display: 'flex', gap: 5 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', pt: 5, px: 4.5 }}>
+        <Typography variant="h1" sx={{ fontWeight: 700, fontSize: 50, margin: 0, color: 'black', justifySelf: 'start' }}>Dr.jart+</Typography>
+        <Box sx={{ display: 'flex', gap: 5, justifySelf: 'center' }}>
           <Typography component="a" href="#" sx={{ fontSize: 15, fontWeight: 500, color: 'inherit', textDecoration: 'none' }}>PRODUCTS</Typography>
           <Typography component="a" href="#" sx={{ fontSize: 15, fontWeight: 500, color: 'inherit', textDecoration: 'none' }}>LAB</Typography>
           <Typography component="a" href="#" sx={{ fontSize: 15, fontWeight: 500, color: 'inherit', textDecoration: 'none' }}>BRAND</Typography>
           <Typography component="a" href="#" sx={{ fontSize: 15, fontWeight: 500, color: 'inherit', textDecoration: 'none' }}>SEARCH</Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, justifySelf: 'end' }}>
           <Box component="a" href="#" aria-label="장바구니" sx={{ display: 'flex', color: 'inherit' }}>
             <ShoppingBagOutlinedIcon sx={{ fontSize: 25 }} />
           </Box>

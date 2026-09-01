@@ -46,7 +46,18 @@ const BestSeller = ({ selectedConcern }) => {
     {index + 1}
   </Box>
 )}
-            <Typography sx={{ fontSize: 15, mt: 1, fontWeight: 500 }}>{product.name}</Typography>
+            <Typography
+              sx={{
+                fontSize: 15,
+                mt: 1,
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {product.name}
+            </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.25 }}>
               {product.discountPercent && (
                 <Typography sx={{ fontSize: 15, fontWeight: 600, color: 'discount.main' }}>

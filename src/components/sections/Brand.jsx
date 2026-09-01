@@ -1,5 +1,6 @@
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import AddIcon from '@mui/icons-material/Add'
 
 const Brand = () => {
   return (
@@ -17,27 +18,35 @@ const Brand = () => {
   }}
 >
       {/* 좌상단 로고 */}
-      <Typography sx={{ position: 'absolute', top: 32, left: 40, fontSize: 33, fontWeight: 700 }}>
+      <Typography sx={{ position: 'absolute', top: 32, left: 40, fontSize: 50, fontWeight: 700 }}>
         Dr.jart+
       </Typography>
 
       {/* 우상단 랩 정보 */}
       <Box sx={{ position: 'absolute', top: 32, right: 40, textAlign: 'right' }}>
-        <Typography sx={{ fontSize: 14 , fontWeight: 600 }}>LAB 01</Typography>
-        <Typography sx={{ fontSize: 14, fontWeight: 600, mt: 5 }}>DERMATOLOGY</Typography>
-        <Typography sx={{ fontSize: 14, fontWeight: 600, mt: 2 }}>SKIN ANALYSIS</Typography>
+        <Typography sx={{ fontSize: 14 , fontWeight: 400 }}>LAB 01</Typography>
+        <Typography sx={{ fontSize: 14, fontWeight: 400, mt: 5 }}>DERMATOLOGY</Typography>
+        <Typography sx={{ fontSize: 14, fontWeight: 400, mt: 2 }}>SKIN ANALYSIS</Typography>
       </Box>
 
       {/* 좌하단 포뮬러 정보 */}
       <Box sx={{ position: 'absolute', bottom: 32, left: 40 }}>
-        <Typography sx={{ fontSize: 14, fontWeight: 600 }}>FORMULA 01</Typography>
-        <Typography sx={{ fontSize: 14, fontWeight: 600 }}>SKIN RESEARCH</Typography>
+        <Typography sx={{ fontSize: 14, fontWeight: 400 }}>FORMULA 01</Typography>
+        <Typography sx={{ fontSize: 14, fontWeight: 400 }}>SKIN RESEARCH</Typography>
       </Box>
 
       {/* 우하단 십자가 */}
-      <Typography sx={{ position: 'absolute', bottom: 24, right: 40, fontSize: 24, fontWeight: 300 }}>
-        +
-      </Typography>
+      <AddIcon
+        sx={{
+          position: 'absolute',
+          bottom: 24,
+          right: 40,
+          fontSize: 40,
+          color: 'white',
+          stroke: 'currentColor',
+          strokeWidth: 2.5,
+        }}
+      />
 
       <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, pt: 10 }}>
   <Box sx={{ textAlign: 'center' }}>

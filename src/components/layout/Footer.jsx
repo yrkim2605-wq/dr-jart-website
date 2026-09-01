@@ -28,6 +28,10 @@ const LEGAL_LINES = [
   '전자우편주소 : webmaster@drjart.com',
 ]
 
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
 const Footer = () => {
   return (
     <Box component="footer" sx={{ bgcolor: 'black', color: 'white', mt: 20 }}>
@@ -96,7 +100,7 @@ const Footer = () => {
           {LEGAL_LINES.map((line) => (
             <Typography
               key={line}
-              sx={{ fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.6)', mt: 0.75 }}
+              sx={{ fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.6)', mt: 0 }}
             >
               {line}
             </Typography>
@@ -105,10 +109,70 @@ const Footer = () => {
       </Box>
 
       <Box sx={{ overflow: 'hidden', bgcolor: 'white' }}>
-        <Typography sx={{ fontSize: 410, fontWeight: 900, textAlign: 'center', color: 'black' }}>
+        <Typography
+          sx={{
+            fontSize: '27.8vw',
+            fontWeight: 900,
+            lineHeight: 1,
+            textAlign: 'left',
+            color: 'black',
+            whiteSpace: 'nowrap',
+            letterSpacing: '-0.02em',
+            ml: '-0.03em',
+            transform: 'translate(-34px, -75px)',
+          }}
+        >
           Dr.jart+
         </Typography>
       </Box>
+
+      <ButtonBase
+        onClick={scrollToTop}
+        aria-label="맨 위로 이동"
+        sx={{
+          position: 'fixed',
+          bottom: 32,
+          right: 32,
+          width: 56,
+          height: 56,
+          borderRadius: '50%',
+          bgcolor: '#C4C4C4',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 0.2,
+          zIndex: 1000,
+          boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
+        }}
+      >
+        <Box component="svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" sx={{ width: 20, height: 20 }}>
+          {/* 뚜껑 */}
+          <rect x="9" y="1.8" width="6" height="1.6" rx="0.6" fill="white" />
+          {/* 목 + 삼각 몸체 외곽선 */}
+          <path
+            d="M10 3.4 V8 L4.2 19 Q4 20 5.2 20 H18.8 Q20 20 19.8 19 L14 8 V3.4"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            fill="none"
+          />
+          {/* 액체 */}
+          <path
+            d="M6.9 14 H17.1 L19.2 18.6 Q19.6 19.4 18.6 19.4 H5.4 Q4.4 19.4 4.8 18.6 Z"
+            fill="white"
+          />
+          {/* 액체 속 기포 (배경색으로 뚫어서 표현) */}
+          <circle cx="9.3" cy="16.3" r="0.7" fill="#C4C4C4" />
+          <circle cx="12.6" cy="17.6" r="1" fill="#C4C4C4" />
+          <circle cx="11" cy="15" r="0.5" fill="#C4C4C4" />
+          {/* 맑은 부분에 떠 있는 기포 */}
+          <circle cx="11.3" cy="11" r="0.55" fill="white" />
+          <circle cx="12.8" cy="12.3" r="0.4" fill="white" />
+        </Box>
+        <Typography sx={{ fontSize: 9, fontWeight: 700, color: 'white', letterSpacing: 0.5 }}>TOP</Typography>
+      </ButtonBase>
     </Box>
   )
 }
