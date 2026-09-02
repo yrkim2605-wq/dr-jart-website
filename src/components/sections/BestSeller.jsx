@@ -3,8 +3,20 @@ import Typography from '@mui/material/Typography'
 import ButtonBase from '@mui/material/ButtonBase'
 import { BEST_SELLER_PRODUCTS } from '../../constants/products'
 import Chip from '@mui/material/Chip'
+import { keyframes } from '@mui/material/styles'
 
 const formatPrice = (price) => `${price.toLocaleString('ko-KR')}원`
+
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`
 
 const BestSeller = ({ selectedConcern }) => {
   const products = BEST_SELLER_PRODUCTS[selectedConcern] ?? []
@@ -14,18 +26,43 @@ const BestSeller = ({ selectedConcern }) => {
       <Typography sx={{ fontSize: 40, fontWeight: 500, textAlign: 'center' }}>
         BEST SELLER
       </Typography>
-      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 2 }}>
+      <Box key={selectedConcern} sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 2 }}>
         {products.map((product, index) => (
-          <Box key={product.id} sx={{ width: 250, mt: 4, position: 'relative' }}>
-            <Box
-              component="img"
-              src={`${import.meta.env.BASE_URL}${product.image}`}
-              alt={product.name}
-              onError={(e) => {
-                e.target.style.display = 'none'
-              }}
-              sx={{ width: '100%', aspectRatio: '6 / 7', bgcolor: '#EDECE7', objectFit: 'cover' }}
-            />
+          <Box
+            key={product.id}
+            sx={{
+              width: 250,
+              mt: 4,
+              position: 'relative',
+              animation: `${fadeInUp} 0.5s ease-out ${index * 0.08}s both`,
+              transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+              '&:hover': {
+                transform: 'translateY(-6px)',
+                boxShadow: '0 12px 24px rgba(0, 0, 0, 0.12)',
+              },
+              '&:hover .productImage': {
+                transform: 'scale(1.06)',
+              },
+            }}
+          >
+            <Box sx={{ width: '100%', aspectRatio: '6 / 7', overflow: 'hidden' }}>
+              <Box
+                component="img"
+                className="productImage"
+                src={`${import.meta.env.BASE_URL}${product.image}`}
+                alt={product.name}
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                }}
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  bgcolor: '#EDECE7',
+                  objectFit: 'cover',
+                  transition: 'transform 0.35s ease',
+                }}
+              />
+            </Box>
             {index < 3 && (
   <Box
     sx={{
@@ -115,9 +152,19 @@ const BestSeller = ({ selectedConcern }) => {
           px: 3,
           py: 1,
           border: '1.5px solid #a7aaab',
+          transition: 'border-color 0.2s ease, background-color 0.2s ease',
+          '&:hover': {
+            borderColor: 'primary.main',
+            bgcolor: 'primary.main',
+          },
+          '&:hover .viewMoreLabel': {
+            color: 'white',
+          },
         }}
       >
-        <Typography sx={{ fontSize: 15, fontWeight: 500, letterSpacing: -0.5 }}>VIEW MORE</Typography>
+        <Typography className="viewMoreLabel" sx={{ fontSize: 15, fontWeight: 500, letterSpacing: -0.5, transition: 'color 0.2s ease' }}>
+          VIEW MORE
+        </Typography>
       </ButtonBase>
     </Box>
   )

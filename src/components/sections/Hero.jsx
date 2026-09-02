@@ -1,11 +1,94 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import AddIcon from '@mui/icons-material/Add'
+import { keyframes } from '@mui/material/styles'
+import TypingText from '../common/TypingText'
+
+const wave = keyframes`
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-15px);
+  }
+`
+
+const drawLine = keyframes`
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+`
+
+const productFloat = keyframes`
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+`
+
+const growDown = keyframes`
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+`
+
+const iconIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+`
+
+const letterIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateX(var(--enter-x, -60vw)) translateY(0.3em);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+`
+
+const ENTER_DURATION = 0.9
+const ENTER_STAGGER = 0.06
+
+const WaveText = ({ text, sx, direction = 'left' }) => (
+  <Typography sx={{ ...sx, '--enter-x': direction === 'right' ? '60vw' : '-60vw' }}>
+    {text.split('').map((char, index) => {
+      const enterDelay = index * ENTER_STAGGER
+      return (
+        <Box
+          key={index}
+          component="span"
+          sx={{
+            display: 'inline-block',
+            animation: `${letterIn} ${ENTER_DURATION}s cubic-bezier(0.22, 1.2, 0.36, 1) ${enterDelay}s both, ${wave} 1.6s ease-in-out ${ENTER_DURATION + enterDelay}s infinite`,
+          }}
+        >
+          {char}
+        </Box>
+      )
+    })}
+  </Typography>
+)
 
 const Hero = () => {
   return (
-    <Box component="section" sx={{ position: 'relative', minHeight: 900, pl: '50px' }}>
-      <Typography sx={{ fontSize: 150, fontWeight: 800 }}>Dr.</Typography>
+    <Box component="section" sx={{ position: 'relative', minHeight: 900, pl: '50px', overflowX: 'hidden' }}>
+      <WaveText text="Dr." direction="left" sx={{ fontSize: 150, fontWeight: 800 }} />
 
       <Box
         sx={{
@@ -18,16 +101,25 @@ const Hero = () => {
         }}
       >
         <Box
-          component="img"
-          src={`${import.meta.env.BASE_URL}images/hero-product.png`}
-          alt="시카페어 수딩 컬러 코렉팅 트리트먼트"
           sx={{
             width: '100%',
             height: '100%',
-            objectFit: 'contain',
-            filter: 'drop-shadow(20px 20px 15px rgba(0, 0, 0, 0.25))',
+            transform: 'translateY(-140px) scale(3.5)',
           }}
-        />
+        >
+          <Box
+            component="img"
+            src={`${import.meta.env.BASE_URL}images/hero-product.png`}
+            alt="시카페어 수딩 컬러 코렉팅 트리트먼트"
+            sx={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              filter: 'drop-shadow(10px 10px 8px rgba(0, 0, 0, 0.25))',
+              animation: `${productFloat} 3.4s ease-in-out 0.5s infinite`,
+            }}
+          />
+        </Box>
 
         {/* 쿨소닉 테크놀로지 안내 문구 + 연결선 (왼쪽, 가로→대각선→가로) */}
         <Typography
@@ -41,9 +133,7 @@ const Hero = () => {
             textAlign: 'left',
           }}
         >
-          쿨소닉 테크놀로지가
-          <br />
-          결합된 CICAPAIR
+          <TypingText lines={['쿨소닉 테크놀로지가', '결합된 CICAPAIR']} startDelay={300} />
         </Typography>
         <Box
           component="svg"
@@ -51,23 +141,66 @@ const Hero = () => {
           height={110}
           sx={{ position: 'absolute', top: 0, left: -245, overflow: 'visible' }}
         >
-          <polyline points="0,48 139,48 162,106 216,106" fill="none" stroke="black" strokeWidth="1" />
-        </Box>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 96,
-            left: -29,
-            width: 16,
-            height: 15,
-            border: '1.5px solid black',
-            bgcolor: 'white',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Box sx={{ width: 6, height: 6, bgcolor: 'black' }} />
+          {/* 텍스트 쪽 구간 (고정) */}
+          <Box
+            component="polyline"
+            points="0,48 139,48"
+            pathLength="100"
+            fill="none"
+            stroke="black"
+            strokeWidth="1"
+            sx={{
+              strokeDasharray: '100',
+              animation: `${drawLine} 0.5s ease-out 0.2s both`,
+            }}
+          />
+          {/* 제품 쪽 구간 (그려진 뒤 계속 위아래로 bob) */}
+          <Box
+            component="polyline"
+            points="139,48 162,106 216,106"
+            pathLength="100"
+            fill="none"
+            stroke="black"
+            strokeWidth="1"
+            sx={{
+              strokeDasharray: '100',
+              animation: `${drawLine} 0.4s ease-out 0.7s both`,
+            }}
+          >
+            <animate
+              attributeName="points"
+              values="139,48 162,106 216,106;139,48 162,122 216,122;139,48 162,106 216,106"
+              keyTimes="0;0.5;1"
+              calcMode="spline"
+              keySplines="0.42 0 0.58 1;0.42 0 0.58 1"
+              dur="2.8s"
+              begin="1.3s"
+              repeatCount="indefinite"
+            />
+          </Box>
+          {/* 제품 쪽 끝 네모 마커 (선과 같은 SVG, 같은 SMIL 타이밍으로 고정 연결) */}
+          <Box component="g" opacity={0}>
+            <animate
+              attributeName="opacity"
+              values="0;1"
+              dur="0.3s"
+              begin="1.1s"
+              fill="freeze"
+            />
+            <animateTransform
+              attributeName="transform"
+              type="translate"
+              values="0,0;0,16;0,0"
+              keyTimes="0;0.5;1"
+              calcMode="spline"
+              keySplines="0.42 0 0.58 1;0.42 0 0.58 1"
+              dur="2.8s"
+              begin="1.3s"
+              repeatCount="indefinite"
+            />
+            <rect x={216} y={96} width={16} height={15} fill="white" stroke="black" strokeWidth="1.5" />
+            <rect x={221} y={100.5} width={6} height={6} fill="black" />
+          </Box>
         </Box>
 
         {/* 1회 사용 효과 안내 문구 + 연결선 (오른쪽, 잡 쪽 가로 → 대각선 → 텍스트) */}
@@ -82,9 +215,7 @@ const Hero = () => {
             textAlign: 'right',
           }}
         >
-          1회 사용으로 민감해진
-          <br />
-          피부를 빠르게 진정
+          <TypingText lines={['1회 사용으로 민감해진', '피부를 빠르게 진정']} startDelay={500} />
         </Typography>
         <Box
           component="svg"
@@ -92,20 +223,93 @@ const Hero = () => {
           height={285}
           sx={{ position: 'absolute', top: 0, left: 351, overflow: 'visible' }}
         >
-          <polyline points="0,285 16,285 40,238 190,238" fill="none" stroke="black" strokeWidth="1" />
+          {/* 텍스트 쪽 구간 (고정) */}
+          <Box
+            component="polyline"
+            points="40,238 190,238"
+            pathLength="100"
+            fill="none"
+            stroke="black"
+            strokeWidth="1"
+            sx={{
+              strokeDasharray: '100',
+              animation: `${drawLine} 0.5s ease-out 0.4s both`,
+            }}
+          />
+          {/* 제품 쪽 구간 (그려진 뒤 계속 위아래로 bob) */}
+          <Box
+            component="polyline"
+            points="0,285 16,285 40,238"
+            pathLength="100"
+            fill="none"
+            stroke="black"
+            strokeWidth="1"
+            sx={{
+              strokeDasharray: '100',
+              animation: `${drawLine} 0.4s ease-out 0.9s both`,
+            }}
+          >
+            <animate
+              attributeName="points"
+              values="0,285 16,285 40,238;0,269 16,269 40,238;0,285 16,285 40,238"
+              keyTimes="0;0.5;1"
+              calcMode="spline"
+              keySplines="0.42 0 0.58 1;0.42 0 0.58 1"
+              dur="2.8s"
+              begin="1.5s"
+              repeatCount="indefinite"
+            />
+          </Box>
         </Box>
       </Box>
 
       {/* 오른쪽 세로 사이드바: + + | CICAPAIR+ FORMULA 01 REDNESS CARE */}
       <Box sx={{ position: 'absolute', top: 110, right: 220, display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 1 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Box sx={{ width: '3px', height: 110, bgcolor: 'black', mt: '-15px' }} />
-          <Box sx={{ width: '1px', height: 400, bgcolor: 'secondary.main' }} />
+          <Box
+            sx={{
+              width: '3px',
+              height: 110,
+              bgcolor: 'black',
+              mt: '-15px',
+              transformOrigin: 'top',
+              animation: `${growDown} 0.6s ease-out 0.2s both`,
+            }}
+          />
+          <Box
+            sx={{
+              width: '1px',
+              height: 400,
+              bgcolor: 'secondary.main',
+              transformOrigin: 'top',
+              animation: `${growDown} 1.4s ease-out 0.8s both`,
+            }}
+          />
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
           <Box sx={{ height: 34, overflow: 'visible', transform: 'translateY(-15px)' }}>
-            <AddIcon sx={{ fontSize: 40, color: '#d9d9d9', stroke: 'currentColor', strokeWidth: 2.5, display: 'block' }} />
-            <AddIcon sx={{ fontSize: 40, color: '#d9d9d9', stroke: 'currentColor', strokeWidth: 2.5, display: 'block' }} />
+            <AddIcon
+              sx={{
+                fontSize: 40,
+                color: '#d9d9d9',
+                stroke: 'currentColor',
+                strokeWidth: 2.5,
+                display: 'block',
+                opacity: 0,
+                animation: `${iconIn} 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both`,
+              }}
+            />
+            <AddIcon
+              sx={{
+                fontSize: 40,
+                color: '#d9d9d9',
+                stroke: 'currentColor',
+                strokeWidth: 2.5,
+                display: 'block',
+                opacity: 0,
+                animation: `${iconIn} 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.45s both`,
+              }}
+            />
           </Box>
           <Typography
             sx={{
@@ -129,15 +333,20 @@ const Hero = () => {
 
       {/* 왼쪽 하단 브랜드 태그라인 */}
       <Box sx={{ position: 'absolute', left: '50px', bottom: 80 }}>
-        <Typography sx={{ fontSize: 15, fontWeight: 500 }}>Dr.Jart+</Typography>
+        <Typography sx={{ fontSize: 15, fontWeight: 500 }}>
+          <TypingText lines={['Dr.Jart+']} startDelay={700} />
+        </Typography>
         <Typography sx={{ fontSize: 13, fontWeight: 500, mt: 3 }}>
-          KOREAN SKIN BARRIER EXPERTS.
-          <br />
-          DREAM INSPIRED. ARTFULLY DELIVERED.
+          <TypingText
+            lines={['KOREAN SKIN BARRIER EXPERTS.', 'DREAM INSPIRED. ARTFULLY DELIVERED.']}
+            startDelay={1000}
+          />
         </Typography>
       </Box>
 
-      <Typography
+      <WaveText
+        text="Jart+"
+        direction="right"
         sx={{
           fontSize: 150,
           fontWeight: 800,
@@ -145,9 +354,7 @@ const Hero = () => {
           right: 32,
           bottom: 32,
         }}
-      >
-        Jart+
-      </Typography>
+      />
     </Box>
   )
 }

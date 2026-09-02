@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import Collapse from '@mui/material/Collapse'
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import PersonOutlineIcon from '@mui/icons-material/PersonOutlineOutlined'
 
@@ -12,7 +13,7 @@ const ANNOUNCEMENTS = [
 ]
 
 const arrowSx = {
-  fontSize: 24,
+  fontSize: { xs: 18, md: 24 },
   fontWeight: 100,
   color: 'white',
   bgcolor: 'transparent',
@@ -20,6 +21,26 @@ const arrowSx = {
   cursor: 'pointer',
   lineHeight: 1,
   p: 0,
+}
+
+const navLinkSx = {
+  fontSize: 15,
+  fontWeight: 500,
+  color: 'inherit',
+  textDecoration: 'none',
+  transition: 'color 0.2s ease',
+  '&:hover': {
+    color: 'primary.main',
+  },
+}
+
+const iconLinkSx = {
+  display: 'flex',
+  color: 'inherit',
+  transition: 'color 0.2s ease',
+  '&:hover': {
+    color: 'primary.main',
+  },
 }
 
 const Header = () => {
@@ -35,7 +56,7 @@ const Header = () => {
 
   return (
     <Box component="header">
-      {isBannerVisible && (
+      <Collapse in={isBannerVisible}>
         <Box sx={{ bgcolor: 'black', color: 'white', display: 'flex', alignItems: 'center', px: 2, py: 1 }}>
           <Box
             sx={{
@@ -45,7 +66,7 @@ const Header = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '400px',
+            gap: { xs: 1.5, sm: 3, md: '400px' },
           }}
         >
           <Typography component="button" onClick={showPrevAnnouncement} aria-label="이전 안내" sx={arrowSx}>
@@ -53,8 +74,8 @@ const Header = () => {
           </Typography>
           <Typography
             sx={{
-              fontSize: 13,
-              width: 480,
+              fontSize: { xs: 11, sm: 12, md: 13 },
+              width: { xs: 200, sm: 320, md: 480 },
               textAlign: 'center',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -71,21 +92,21 @@ const Header = () => {
         ×
       </Typography>
       </Box>
-      )}
+      </Collapse>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', pt: 5, px: 4.5 }}>
         <Typography variant="h1" sx={{ fontWeight: 700, fontSize: 50, margin: 0, color: 'black', justifySelf: 'start' }}>Dr.jart+</Typography>
         <Box sx={{ display: 'flex', gap: 5, justifySelf: 'center' }}>
-          <Typography component="a" href="#" sx={{ fontSize: 15, fontWeight: 500, color: 'inherit', textDecoration: 'none' }}>PRODUCTS</Typography>
-          <Typography component="a" href="#" sx={{ fontSize: 15, fontWeight: 500, color: 'inherit', textDecoration: 'none' }}>LAB</Typography>
-          <Typography component="a" href="#" sx={{ fontSize: 15, fontWeight: 500, color: 'inherit', textDecoration: 'none' }}>BRAND</Typography>
-          <Typography component="a" href="#" sx={{ fontSize: 15, fontWeight: 500, color: 'inherit', textDecoration: 'none' }}>SEARCH</Typography>
+          <Typography component="a" href="#" sx={navLinkSx}>PRODUCTS</Typography>
+          <Typography component="a" href="#" sx={navLinkSx}>LAB</Typography>
+          <Typography component="a" href="#" sx={navLinkSx}>BRAND</Typography>
+          <Typography component="a" href="#" sx={navLinkSx}>SEARCH</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, justifySelf: 'end' }}>
-          <Box component="a" href="#" aria-label="장바구니" sx={{ display: 'flex', color: 'inherit' }}>
+          <Box component="a" href="#" aria-label="장바구니" sx={iconLinkSx}>
             <ShoppingBagOutlinedIcon sx={{ fontSize: 25 }} />
           </Box>
-          <Box component="a" href="#" aria-label="로그인" sx={{ display: 'flex', color: 'inherit' }}>
+          <Box component="a" href="#" aria-label="로그인" sx={iconLinkSx}>
             <PersonOutlineIcon sx={{ fontSize: 25 }} />
           </Box>
         </Box>

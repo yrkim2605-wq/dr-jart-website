@@ -28,74 +28,91 @@ const SkinConcern = ({ selectedConcern, onSelectConcern }) => {
       </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mt: 12 }}>
-        {CONCERNS.map((concern) => (
-          <ButtonBase
-            key={concern.id}
-            onClick={() => onSelectConcern(concern.id)}
-            sx={{ textAlign: 'center', display: 'block' }}
-          >
-            <Box
-              sx={{
-                position: 'relative',
-                width: 112,
-                height: 112,
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'scale(1.1)',
-                },
-              }}
+        {CONCERNS.map((concern) => {
+          const isSelected = concern.id === selectedConcern
+          return (
+            <ButtonBase
+              key={concern.id}
+              onClick={() => onSelectConcern(concern.id)}
+              sx={{ textAlign: 'center', display: 'block' }}
             >
               <Box
                 sx={{
+                  position: 'relative',
                   width: 112,
                   height: 112,
-                  borderRadius: '50%',
-                  bgcolor: '#EDECE7',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  overflow: concern.mode === 'cover' ? 'hidden' : 'visible',
+                  transition: 'transform 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.1)',
+                  },
                 }}
               >
                 <Box
-                  component="img"
-                  src={`${import.meta.env.BASE_URL}${concern.image}`}
-                  alt={concern.label}
-                  onError={(e) => {
-                    e.target.style.display = 'none'
-                  }}
-                  sx={
-                    concern.mode === 'cover'
-                      ? { width: '100%', height: '100%', objectFit: 'cover' }
-                      : { width: concern.width, height: 'auto', display: 'block' }
-                  }
-                />
-              </Box>
-              {concern.isNew && (
-                <Box
                   sx={{
-                    position: 'absolute',
-                    top: 2,
-                    right: 0,
-                    width: 24,
-                    height: 24,
+                    width: 112,
+                    height: 112,
                     borderRadius: '50%',
-                    bgcolor: 'primary.main',
-                    color: 'white',
+                    bgcolor: '#EDECE7',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 13,
-                    fontWeight: 700,
+                    overflow: concern.mode === 'cover' ? 'hidden' : 'visible',
+                    border: '2px solid',
+                    borderColor: isSelected ? 'primary.main' : 'transparent',
+                    boxSizing: 'border-box',
+                    transition: 'border-color 0.25s ease',
                   }}
                 >
-                  N
+                  <Box
+                    component="img"
+                    src={`${import.meta.env.BASE_URL}${concern.image}`}
+                    alt={concern.label}
+                    onError={(e) => {
+                      e.target.style.display = 'none'
+                    }}
+                    sx={
+                      concern.mode === 'cover'
+                        ? { width: '100%', height: '100%', objectFit: 'cover' }
+                        : { width: concern.width, height: 'auto', display: 'block' }
+                    }
+                  />
                 </Box>
-              )}
-            </Box>
-            <Typography sx={{ fontSize: 15, mt: 1, fontWeight: 500 }}>{concern.label}</Typography>
-          </ButtonBase>
-        ))}
+                {concern.isNew && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 2,
+                      right: 0,
+                      width: 24,
+                      height: 24,
+                      borderRadius: '50%',
+                      bgcolor: 'primary.main',
+                      color: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 13,
+                      fontWeight: 700,
+                    }}
+                  >
+                    N
+                  </Box>
+                )}
+              </Box>
+              <Typography
+                sx={{
+                  fontSize: 15,
+                  mt: 1,
+                  fontWeight: isSelected ? 700 : 500,
+                  color: isSelected ? 'primary.main' : 'inherit',
+                  transition: 'color 0.25s ease',
+                }}
+              >
+                {concern.label}
+              </Typography>
+            </ButtonBase>
+          )
+        })}
       </Box>
     </Box>
   )

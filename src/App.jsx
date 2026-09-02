@@ -6,6 +6,7 @@ import BestSeller from './components/sections/BestSeller'
 import ProductReview from './components/sections/ProductReview'
 import  FeaturedProduct from './components/sections/FeaturedProduct'
 import Footer from './components/layout/Footer'
+import Reveal from './components/common/Reveal'
 
 import { useState } from 'react'
 
@@ -16,12 +17,14 @@ function App() {
     <>
       <Header />
       <Hero />
-      <Brand />
-      <SkinConcern selectedConcern={selectedConcern} onSelectConcern={setSelectedConcern} />
-      <BestSeller selectedConcern={selectedConcern} />
-      <ProductReview />
-      <FeaturedProduct />
-      <Footer />
+      <Reveal threshold={0.01}><Brand /></Reveal>
+      <Reveal>
+        <SkinConcern selectedConcern={selectedConcern} onSelectConcern={setSelectedConcern} />
+      </Reveal>
+      <Reveal><BestSeller selectedConcern={selectedConcern} /></Reveal>
+      <Reveal><ProductReview /></Reveal>
+      <Reveal><FeaturedProduct /></Reveal>
+      <Reveal><Footer /></Reveal>
     </>
   )
 }
