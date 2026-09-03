@@ -128,12 +128,12 @@ const Hero = () => {
             top: 5,
             left: -245,
             width: 150,
-            fontSize: 13,
+            fontSize: 14,
             lineHeight: 1.2,
             textAlign: 'left',
           }}
         >
-          <Box component="span" sx={{ display: 'block' }}>
+          <Box component="span" sx={{ display: 'block', color: 'secondary.main' }}>
             <ScrambleText text="쿨소닉 테크놀로지가" startDelay={300} duration={1400} />
           </Box>
           <Box component="span" sx={{ display: 'block' }}>
@@ -215,12 +215,12 @@ const Hero = () => {
             top: 192,
             left: 365,
             width: 180,
-            fontSize: 13,
+            fontSize: 14,
             lineHeight: 1.2,
             textAlign: 'right',
           }}
         >
-          <Box component="span" sx={{ display: 'block' }}>
+          <Box component="span" sx={{ display: 'block', color: 'secondary.main' }}>
             <ScrambleText text="1회 사용으로 민감해진" startDelay={500} duration={1400} />
           </Box>
           <Box component="span" sx={{ display: 'block' }}>
