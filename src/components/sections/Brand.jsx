@@ -34,11 +34,28 @@ const spin = keyframes`
   }
 `
 
+const pulseGlow = keyframes`
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+`
+
+const labLabelSx = {
+  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+  letterSpacing: 1.5,
+}
+
 // 이 구간(0~ZOOM_WINDOW) 동안 사진 프레임이 화면 가운데 작게 떠 있다가 풀블리드로 확대됨
 // stage가 0→1로 바뀌는 지점(0.22)과 맞춰서, 확대가 끝난 직후 텍스트가 나타나도록 함
 const ZOOM_WINDOW = 0.22
-const FRAME_INSET_START = 16 // % - 시작 시 사방 여백
+const FRAME_INSET_START = 28 // % - 시작 시 사방 여백
 const FRAME_INSET_END = 0 // % - 다 확대된 뒤 여백
+const FRAME_VERTICAL_SHIFT_START = 6 // % - 시작 시 프레임을 아래로 내리는 정도 (다 확대되면 0으로 수렴)
 
 const Brand = () => {
   const wrapperRef = useRef(null)
@@ -96,14 +113,17 @@ const Brand = () => {
           justifyContent: 'center',
         }}
       >
-        {/* 진입 시 화면 가운데 작게 떠 있다가 스크롤에 따라 풀블리드로 확대되는 사진 프레임 */}
+        {/* 진입 시 화면 가운데보다 아래쪽에 작게 떠 있다가 스크롤에 따라 풀블리드로 확대되는 사진 프레임 */}
         <Box
           sx={{
             position: 'absolute',
-            inset: `${FRAME_INSET_START - (FRAME_INSET_START - FRAME_INSET_END) * zoomProgress}%`,
+            top: `${FRAME_INSET_START - (FRAME_INSET_START - FRAME_INSET_END) * zoomProgress + FRAME_VERTICAL_SHIFT_START * (1 - zoomProgress)}%`,
+            bottom: `${FRAME_INSET_START - (FRAME_INSET_START - FRAME_INSET_END) * zoomProgress - FRAME_VERTICAL_SHIFT_START * (1 - zoomProgress)}%`,
+            left: `${FRAME_INSET_START - (FRAME_INSET_START - FRAME_INSET_END) * zoomProgress}%`,
+            right: `${FRAME_INSET_START - (FRAME_INSET_START - FRAME_INSET_END) * zoomProgress}%`,
             overflow: 'hidden',
-            transition: 'inset 1.1s cubic-bezier(0.16, 1, 0.3, 1)',
-            willChange: 'inset',
+            transition: 'top 1.1s cubic-bezier(0.16, 1, 0.3, 1), bottom 1.1s cubic-bezier(0.16, 1, 0.3, 1), left 1.1s cubic-bezier(0.16, 1, 0.3, 1), right 1.1s cubic-bezier(0.16, 1, 0.3, 1)',
+            willChange: 'top, bottom, left, right',
           }}
         >
           <Box
@@ -130,8 +150,9 @@ const Brand = () => {
                 position: 'absolute',
                 width: 18,
                 height: 18,
-                borderColor: 'white',
+                borderColor: '#B7E3D5',
                 borderStyle: 'solid',
+                filter: 'drop-shadow(0 0 3px rgba(183, 227, 213, 0.7))',
                 opacity: 1 - zoomProgress,
                 ...pos,
               }}
@@ -139,17 +160,113 @@ const Brand = () => {
           ))}
         </Box>
 
-        {/* 화면 좌상단의 은은한 십자 장식 */}
-        <AddIcon
+        {/* 캔버스 느낌의 은은한 점선 가이드라인 + 십자 장식 (레퍼런스 참고) */}
+        <Box
           sx={{
             position: 'absolute',
-            top: 100,
-            left: 40,
-            fontSize: 22,
-            color: 'rgba(255,255,255,0.35)',
-            opacity: 1 - zoomProgress,
+            left: '16%',
+            top: 0,
+            bottom: 0,
+            width: 0,
+            borderLeft: '1px dashed rgba(183, 227, 213, 0.22)',
+            pointerEvents: 'none',
           }}
         />
+        {/* 왼쪽 상단 점선 박스 안의 은은한 워터마크 반복 텍스트 (레퍼런스 참고) */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 40,
+            left: 40,
+            right: '84%',
+            bottom: '78.1%',
+            opacity: 1 - zoomProgress,
+            pointerEvents: 'none',
+          }}
+        >
+          {[
+            { top: 40, left: 0 },
+            { top: 40, left: '52%' },
+            { top: 62, left: 0 },
+            { top: 62, left: '40%' },
+            { top: 110, left: 0 },
+          ].map((pos, i) => (
+            <Typography
+              key={i}
+              sx={{
+                position: 'absolute',
+                fontSize: 11,
+                fontWeight: 700,
+                color: 'rgba(255,255,255,0.12)',
+                whiteSpace: 'nowrap',
+                ...pos,
+              }}
+            >
+              Dr.jart+ LABS
+            </Typography>
+          ))}
+        </Box>
+
+        {/* 반대편 대칭 세로 점선 - 간격이 더 넓은 점선 스타일 */}
+        <Box
+          sx={{
+            position: 'absolute',
+            right: '16%',
+            top: 0,
+            bottom: 0,
+            width: '1px',
+            background:
+              'repeating-linear-gradient(to bottom, rgba(183, 227, 213, 0.22) 0px, rgba(183, 227, 213, 0.22) 3px, transparent 3px, transparent 16px)',
+            pointerEvents: 'none',
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '21.9%',
+            left: 0,
+            right: 0,
+            height: 0,
+            borderTop: '1px dashed rgba(183, 227, 213, 0.22)',
+            pointerEvents: 'none',
+          }}
+        />
+        {/* 사진 아래쪽의 촘촘한 가로 점선 - 확대되면 서서히 사라짐 */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '87%',
+            left: 0,
+            right: 0,
+            height: '1px',
+            background:
+              'repeating-linear-gradient(to right, rgba(183, 227, 213, 0.22) 0px, rgba(183, 227, 213, 0.22) 2px, transparent 2px, transparent 5px)',
+            opacity: 1 - zoomProgress,
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* 진입 애니메이션(pulseGlow)이 opacity를 계속 점유하므로, 줌 진행에 따른 opacity는
+            바깥 Box가, 펄스는 안쪽 아이콘이 각각 따로 담당하게 분리 */}
+        <Box sx={{ position: 'absolute', top: '21.9%', left: '16%', transform: 'translate(-50%, calc(-50% + 2px))', opacity: 1 - zoomProgress }}>
+          <AddIcon
+            sx={{
+              fontSize: 22,
+              color: '#B7E3D5',
+              animation: `${pulseGlow} 2.6s ease-in-out infinite`,
+            }}
+          />
+        </Box>
+        {/* 오른쪽 세로선 + 아래쪽 가로선이 교차하는 지점의 십자 장식 */}
+        <Box sx={{ position: 'absolute', top: '87%', left: '84%', transform: 'translate(-50%, -50%)', opacity: 1 - zoomProgress }}>
+          <AddIcon
+            sx={{
+              fontSize: 22,
+              color: '#B7E3D5',
+              animation: `${pulseGlow} 2.6s ease-in-out infinite 1.3s`,
+            }}
+          />
+        </Box>
 
         {/* 진입 시(스크롤 전) 아래로 스크롤을 유도하는 인디케이터 */}
         <Box
@@ -195,7 +312,7 @@ const Brand = () => {
             position: 'absolute',
             top: 32,
             left: 40,
-            fontSize: 50,
+            fontSize: 22,
             fontWeight: 700,
             opacity: stage >= 1 ? 1 : 0,
             transform: stage >= 1 ? 'translateY(0)' : 'translateY(20px)',
@@ -219,14 +336,14 @@ const Brand = () => {
             pointerEvents: 'none',
           }}
         >
-          <Typography sx={{ fontSize: 14, fontWeight: 400 }}>
-            <ScrambleText text="LAB 01" start={stage >= 1} startDelay={0} duration={700} />
+          <Typography sx={{ fontSize: 14, fontWeight: 400, color: '#B7E3D5', ...labLabelSx }}>
+            <ScrambleText text="LAB_01" start={stage >= 1} startDelay={0} duration={700} />
           </Typography>
-          <Typography sx={{ fontSize: 14, fontWeight: 400, mt: 5 }}>
+          <Typography sx={{ fontSize: 14, fontWeight: 400, mt: 5, ...labLabelSx }}>
             <ScrambleText text="DERMATOLOGY" start={stage >= 1} startDelay={250} duration={700} />
           </Typography>
-          <Typography sx={{ fontSize: 14, fontWeight: 400, mt: 2 }}>
-            <ScrambleText text="SKIN ANALYSIS" start={stage >= 1} startDelay={500} duration={700} />
+          <Typography sx={{ fontSize: 14, fontWeight: 400, mt: 2, ...labLabelSx }}>
+            <ScrambleText text="SKIN_ANALYSIS" start={stage >= 1} startDelay={500} duration={700} />
           </Typography>
         </Box>
 
@@ -242,12 +359,12 @@ const Brand = () => {
             pointerEvents: 'none',
           }}
         >
-          <Typography sx={{ fontSize: 14, fontWeight: 400 }}>
-            <Box component="span" sx={{ display: 'block' }}>
-              <ScrambleText text="FORMULA 01" start={stage >= 1} duration={700} />
+          <Typography sx={{ fontSize: 14, fontWeight: 400, ...labLabelSx }}>
+            <Box component="span" sx={{ display: 'block', color: '#B7E3D5' }}>
+              <ScrambleText text="FORMULA_01" start={stage >= 1} duration={700} />
             </Box>
             <Box component="span" sx={{ display: 'block' }}>
-              <ScrambleText text="SKIN RESEARCH" start={stage >= 1} startDelay={250} duration={700} />
+              <ScrambleText text="SKIN_RESEARCH" start={stage >= 1} startDelay={250} duration={700} />
             </Box>
           </Typography>
         </Box>
@@ -269,10 +386,10 @@ const Brand = () => {
             pointerEvents: 'none',
           }}
         >
-          <Typography sx={{ fontSize: 12, fontWeight: 500, letterSpacing: 2, color: 'white', whiteSpace: 'nowrap' }}>
+          <Typography sx={{ fontSize: 12, fontWeight: 500, color: '#B7E3D5', whiteSpace: 'nowrap', ...labLabelSx }}>
             CLICK
           </Typography>
-          <KeyboardArrowDownIcon sx={{ fontSize: 22, color: 'white' }} />
+          <KeyboardArrowDownIcon sx={{ fontSize: 22, color: '#B7E3D5' }} />
         </Box>
 
         {/* 우하단 십자가 - 호버 시 왼쪽에 View More가 나타나고 십자가가 회전 */}

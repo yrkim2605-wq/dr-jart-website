@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Collapse from '@mui/material/Collapse'
@@ -67,6 +67,15 @@ const Header = ({ stickyVisible = false }) => {
     setAnnouncementIndex((prev) => (prev + 1) % ANNOUNCEMENTS.length)
   }
 
+  // 안내 문구가 몇 초마다 자동으로 다음으로 슬라이드됨
+  useEffect(() => {
+    if (!isBannerVisible) return
+    const timer = setInterval(() => {
+      setAnnouncementIndex((prev) => (prev + 1) % ANNOUNCEMENTS.length)
+    }, 4000)
+    return () => clearInterval(timer)
+  }, [isBannerVisible])
+
   return (
     <>
       {/* 세 번째 섹션부터 다시 보이는 고정 헤더 */}
@@ -88,7 +97,7 @@ const Header = ({ stickyVisible = false }) => {
           px: 4.5,
         }}
       >
-        <Typography sx={{ fontWeight: 700, fontSize: 26, color: 'black', justifySelf: 'start' }}>Dr.jart+</Typography>
+        <Typography sx={{ fontWeight: 700, fontSize: 25, color: 'black', justifySelf: 'start' }}>Dr.jart+</Typography>
         <Box sx={{ display: 'flex', gap: 4, justifySelf: 'center' }}>
           <Typography component="a" href="#" onMouseMove={handleNavMagnetMove} onMouseLeave={handleNavMagnetLeave} sx={{ ...navLinkSx, fontSize: 14 }}>PRODUCTS</Typography>
           <Typography component="a" href="#" onMouseMove={handleNavMagnetMove} onMouseLeave={handleNavMagnetLeave} sx={{ ...navLinkSx, fontSize: 14 }}>LAB</Typography>
@@ -122,18 +131,31 @@ const Header = ({ stickyVisible = false }) => {
           <Typography component="button" onClick={showPrevAnnouncement} aria-label="이전 안내" sx={arrowSx}>
             ‹
           </Typography>
-          <Typography
-            sx={{
-              fontSize: { xs: 11, sm: 12, md: 13 },
-              width: { xs: 200, sm: 320, md: 480 },
-              textAlign: 'center',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            {ANNOUNCEMENTS[announcementIndex]}
-          </Typography>
+          <Box sx={{ width: { xs: 200, sm: 320, md: 480 }, overflow: 'hidden' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                transform: `translateX(-${announcementIndex * 100}%)`,
+                transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+              }}
+            >
+              {ANNOUNCEMENTS.map((text, i) => (
+                <Typography
+                  key={i}
+                  sx={{
+                    flex: '0 0 100%',
+                    fontSize: { xs: 11, sm: 12, md: 13 },
+                    textAlign: 'center',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {text}
+                </Typography>
+              ))}
+            </Box>
+          </Box>
           <Typography component="button" onClick={showNextAnnouncement} aria-label="다음 안내" sx={arrowSx}>
             ›
           </Typography>
@@ -145,7 +167,7 @@ const Header = ({ stickyVisible = false }) => {
       </Collapse>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', pt: 5, px: 4.5 }}>
-        <Typography variant="h1" sx={{ fontWeight: 700, fontSize: 50, margin: 0, color: 'black', justifySelf: 'start' }}>Dr.jart+</Typography>
+        <Typography variant="h1" sx={{ fontWeight: 700, fontSize: 25, margin: 0, color: 'black', justifySelf: 'start' }}>Dr.jart+</Typography>
         <Box sx={{ display: 'flex', gap: 5, justifySelf: 'center' }}>
           <Typography component="a" href="#" onMouseMove={handleNavMagnetMove} onMouseLeave={handleNavMagnetLeave} sx={navLinkSx}>PRODUCTS</Typography>
           <Typography component="a" href="#" onMouseMove={handleNavMagnetMove} onMouseLeave={handleNavMagnetLeave} sx={navLinkSx}>LAB</Typography>

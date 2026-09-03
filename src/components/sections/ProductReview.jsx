@@ -91,7 +91,7 @@ const ProductReview = () => {
 
   return (
     <Box component="section" sx={{ pt: 24 }}>
-      <Typography sx={{ fontSize: 50, fontWeight: 700, px: 4.5 }}>Dr.jart+</Typography>
+      <Typography sx={{ fontSize: 25, fontWeight: 700, px: 4.5 }}>Dr.jart+</Typography>
       <Box ref={titleRef}>
         <Box sx={{ overflow: 'hidden', mt: 15 }}>
           <Typography
