@@ -56,7 +56,7 @@ const iconLinkSx = {
   },
 }
 
-const Header = () => {
+const Header = ({ stickyVisible = false }) => {
   const [announcementIndex, setAnnouncementIndex] = useState(0)
   const [isBannerVisible, setIsBannerVisible] = useState(true)
 
@@ -68,7 +68,44 @@ const Header = () => {
   }
 
   return (
-    <Box component="header">
+    <>
+      {/* 세 번째 섹션부터 다시 보이는 고정 헤더 */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1300,
+          bgcolor: 'white',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+          transform: stickyVisible ? 'translateY(0)' : 'translateY(-100%)',
+          transition: 'transform 0.35s ease',
+          display: 'grid',
+          gridTemplateColumns: '1fr auto 1fr',
+          alignItems: 'center',
+          py: 2,
+          px: 4.5,
+        }}
+      >
+        <Typography sx={{ fontWeight: 700, fontSize: 26, color: 'black', justifySelf: 'start' }}>Dr.jart+</Typography>
+        <Box sx={{ display: 'flex', gap: 4, justifySelf: 'center' }}>
+          <Typography component="a" href="#" onMouseMove={handleNavMagnetMove} onMouseLeave={handleNavMagnetLeave} sx={{ ...navLinkSx, fontSize: 14 }}>PRODUCTS</Typography>
+          <Typography component="a" href="#" onMouseMove={handleNavMagnetMove} onMouseLeave={handleNavMagnetLeave} sx={{ ...navLinkSx, fontSize: 14 }}>LAB</Typography>
+          <Typography component="a" href="#" onMouseMove={handleNavMagnetMove} onMouseLeave={handleNavMagnetLeave} sx={{ ...navLinkSx, fontSize: 14 }}>BRAND</Typography>
+          <Typography component="a" href="#" onMouseMove={handleNavMagnetMove} onMouseLeave={handleNavMagnetLeave} sx={{ ...navLinkSx, fontSize: 14 }}>SEARCH</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, justifySelf: 'end' }}>
+          <Box component="a" href="#" aria-label="장바구니" sx={iconLinkSx}>
+            <ShoppingBagOutlinedIcon sx={{ fontSize: 22 }} />
+          </Box>
+          <Box component="a" href="#" aria-label="로그인" sx={iconLinkSx}>
+            <PersonOutlineIcon sx={{ fontSize: 22 }} />
+          </Box>
+        </Box>
+      </Box>
+
+      <Box component="header">
       <Collapse in={isBannerVisible}>
         <Box sx={{ bgcolor: 'black', color: 'white', display: 'flex', alignItems: 'center', px: 2, py: 1 }}>
           <Box
@@ -124,7 +161,8 @@ const Header = () => {
           </Box>
         </Box>
       </Box>
-    </Box>
+      </Box>
+    </>
   )
 }
 

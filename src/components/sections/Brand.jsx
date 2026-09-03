@@ -34,10 +34,17 @@ const spin = keyframes`
   }
 `
 
+// 이 구간(0~ZOOM_WINDOW) 동안 사진 프레임이 화면 가운데 작게 떠 있다가 풀블리드로 확대됨
+// stage가 0→1로 바뀌는 지점(0.22)과 맞춰서, 확대가 끝난 직후 텍스트가 나타나도록 함
+const ZOOM_WINDOW = 0.22
+const FRAME_INSET_START = 16 // % - 시작 시 사방 여백
+const FRAME_INSET_END = 0 // % - 다 확대된 뒤 여백
+
 const Brand = () => {
   const wrapperRef = useRef(null)
   const [stage, setStage] = useState(0)
   const [isCrossHovered, setIsCrossHovered] = useState(false)
+  const [zoomProgress, setZoomProgress] = useState(0)
 
   useEffect(() => {
     let ticking = false
@@ -52,6 +59,8 @@ const Brand = () => {
       if (scrollableDistance <= 0) return
 
       const progress = Math.min(Math.max(-rect.top / scrollableDistance, 0), 1)
+
+      setZoomProgress(Math.min(progress / ZOOM_WINDOW, 1))
 
       if (progress < 0.22) setStage(0)
       else if (progress < 0.75) setStage(1)
@@ -81,20 +90,64 @@ const Brand = () => {
           height: '100vh',
           overflow: 'hidden',
           color: 'white',
+          bgcolor: 'black',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
         }}
       >
-        {/* 배경 사진 (천천히 확대되는 켄번즈 효과) */}
+        {/* 진입 시 화면 가운데 작게 떠 있다가 스크롤에 따라 풀블리드로 확대되는 사진 프레임 */}
         <Box
           sx={{
             position: 'absolute',
-            inset: 0,
-            backgroundImage: `url(${import.meta.env.BASE_URL}images/brand-photo.jpg)`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            animation: `${kenBurns} 12s ease-in-out infinite alternate`,
+            inset: `${FRAME_INSET_START - (FRAME_INSET_START - FRAME_INSET_END) * zoomProgress}%`,
+            overflow: 'hidden',
+            transition: 'inset 1.1s cubic-bezier(0.16, 1, 0.3, 1)',
+            willChange: 'inset',
+          }}
+        >
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              backgroundImage: `url(${import.meta.env.BASE_URL}images/brand-photo.jpg)`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              animation: `${kenBurns} 12s ease-in-out infinite alternate`,
+            }}
+          />
+
+          {/* 프레임 모서리 장식 - 다 확대되면 서서히 사라짐 */}
+          {[
+            { top: 12, left: 12, borderWidth: '2px 0 0 2px' },
+            { top: 12, right: 12, borderWidth: '2px 2px 0 0' },
+            { bottom: 12, left: 12, borderWidth: '0 0 2px 2px' },
+            { bottom: 12, right: 12, borderWidth: '0 2px 2px 0' },
+          ].map((pos, i) => (
+            <Box
+              key={i}
+              sx={{
+                position: 'absolute',
+                width: 18,
+                height: 18,
+                borderColor: 'white',
+                borderStyle: 'solid',
+                opacity: 1 - zoomProgress,
+                ...pos,
+              }}
+            />
+          ))}
+        </Box>
+
+        {/* 화면 좌상단의 은은한 십자 장식 */}
+        <AddIcon
+          sx={{
+            position: 'absolute',
+            top: 100,
+            left: 40,
+            fontSize: 22,
+            color: 'rgba(255,255,255,0.35)',
+            opacity: 1 - zoomProgress,
           }}
         />
 

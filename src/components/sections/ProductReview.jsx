@@ -30,6 +30,18 @@ const ProductReview = () => {
   const positionRef = useRef(0)
   const currentSpeedRef = useRef(0)
 
+  const reviewStageRef = useRef(null)
+  const [isReviewHovered, setIsReviewHovered] = useState(false)
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 })
+
+  // 모바일(터치)에서는 hover가 없어서, 탭한 사진을 잠시 hover 상태처럼 보여줌
+  const [touchActiveKey, setTouchActiveKey] = useState(null)
+
+  const handleReviewMouseMove = (e) => {
+    const rect = reviewStageRef.current.getBoundingClientRect()
+    setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+  }
+
   useEffect(() => {
     const el = titleRef.current
     if (!el) return
@@ -111,13 +123,18 @@ const ProductReview = () => {
       </Box>
 
       <Box
-        sx={{ mt: 8, width: '100%', overflow: 'hidden' }}
+        ref={reviewStageRef}
+        data-hide-cursor
+        onMouseMove={handleReviewMouseMove}
         onMouseEnter={() => {
           isHoveredRef.current = true
+          setIsReviewHovered(true)
         }}
         onMouseLeave={() => {
           isHoveredRef.current = false
+          setIsReviewHovered(false)
         }}
+        sx={{ position: 'relative', mt: 8, width: '100%', overflow: 'hidden', cursor: 'none' }}
       >
         <Box
           ref={stripRef}
@@ -129,22 +146,105 @@ const ProductReview = () => {
             willChange: 'transform',
           }}
         >
-          {STRIP_ITEMS.map((review, index) =>
-            review.image ? (
+          {STRIP_ITEMS.map((review, index) => {
+            const itemKey = `${review.id}-${index}`
+            return review.image ? (
               <Box
-                key={`${review.id}-${index}`}
-                component="img"
-                src={`${import.meta.env.BASE_URL}${review.image}`}
-                alt={review.label}
-                sx={{ height: 320, aspectRatio: review.aspectRatio, flexShrink: 0, objectFit: 'cover', display: 'block' }}
-              />
+                key={itemKey}
+                tabIndex={0}
+                onTouchStart={() => setTouchActiveKey(itemKey)}
+                onTouchEnd={() => setTimeout(() => setTouchActiveKey((cur) => (cur === itemKey ? null : cur)), 800)}
+                className={touchActiveKey === itemKey ? 'touchActive' : undefined}
+                sx={{
+                  position: 'relative',
+                  height: 320,
+                  aspectRatio: review.aspectRatio,
+                  flexShrink: 0,
+                  overflow: 'hidden',
+                  outline: 'none',
+                  '&:hover .reviewImage, &:focus-visible .reviewImage, &.touchActive .reviewImage': {
+                    transform: 'scale(1.08)',
+                    filter: 'brightness(0.85) saturate(1.15)',
+                  },
+                  '&:hover .reviewOverlay, &:focus-visible .reviewOverlay, &.touchActive .reviewOverlay': {
+                    opacity: 1,
+                    transform: 'translateY(0)',
+                  },
+                }}
+              >
+                <Box
+                  component="img"
+                  className="reviewImage"
+                  src={`${import.meta.env.BASE_URL}${review.image}`}
+                  alt={review.label}
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                    willChange: 'transform',
+                    transition: 'transform 0.4s ease, filter 0.4s ease',
+                  }}
+                />
+                <Box
+                  className="reviewOverlay"
+                  sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    p: 1,
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0) 55%)',
+                    opacity: 0,
+                    transform: 'translateY(6px)',
+                    transition: 'opacity 0.3s ease, transform 0.3s ease',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  <Typography sx={{ fontSize: 12, fontWeight: 500, color: 'white' }}>{review.label}</Typography>
+                </Box>
+              </Box>
             ) : (
-              <Box
-                key={`${review.id}-${index}`}
-                sx={{ height: 320, width: 140, flexShrink: 0, bgcolor: '#EDECE7' }}
-              />
-            ),
-          )}
+              <Box key={itemKey} sx={{ height: 320, width: 140, flexShrink: 0, bgcolor: '#EDECE7' }} />
+            )
+          })}
+        </Box>
+
+        {/* 리뷰 위에서 커서를 따라다니는 View More 원형 라벨 */}
+        <Box
+          sx={{
+            position: 'absolute',
+            width: 88,
+            height: 88,
+            borderRadius: '50%',
+            bgcolor: 'black',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+            left: cursorPos.x - 44,
+            top: cursorPos.y - 44,
+            opacity: isReviewHovered ? 1 : 0,
+            transform: `scale(${isReviewHovered ? 1 : 0.5})`,
+            transition: isReviewHovered
+              ? 'opacity 0.2s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)'
+              : 'opacity 0.5s ease, transform 0.5s ease',
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: 12,
+              fontWeight: 500,
+              letterSpacing: -0.3,
+              color: 'white',
+              textAlign: 'center',
+              lineHeight: 1.3,
+            }}
+          >
+            VIEW
+            <br />
+            MORE
+          </Typography>
         </Box>
       </Box>
     </Box>

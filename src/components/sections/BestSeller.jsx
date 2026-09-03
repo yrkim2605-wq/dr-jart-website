@@ -37,21 +37,27 @@ const BestSeller = ({ selectedConcern }) => {
   const titleRef = useRef(null)
   const [titleStarted, setTitleStarted] = useState(false)
 
+  // 모바일(터치)에서는 hover가 없어서, 탭한 카드를 잠시 hover 상태처럼 보여줌
+  const [touchActiveId, setTouchActiveId] = useState(null)
+
   const magnetRef = useRef(null)
 
+  // 마우스 위치에 따라 살짝 끌려오면서(자석 효과) 3D로 기울어지는 버튼
   const handleMagnetMove = (e) => {
     const el = magnetRef.current
     if (!el) return
     const rect = el.getBoundingClientRect()
     const relX = e.clientX - rect.left - rect.width / 2
     const relY = e.clientY - rect.top - rect.height / 2
-    el.style.transform = `translate(${relX * 0.3}px, ${relY * 0.4}px)`
+    const rotateX = (-relY / rect.height) * 14
+    const rotateY = (relX / rect.width) * 14
+    el.style.transform = `perspective(400px) translate(${relX * 0.3}px, ${relY * 0.4}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
   }
 
   const handleMagnetLeave = () => {
     const el = magnetRef.current
     if (!el) return
-    el.style.transform = 'translate(0px, 0px)'
+    el.style.transform = 'perspective(400px) translate(0px, 0px) rotateX(0deg) rotateY(0deg)'
   }
 
   useEffect(() => {
@@ -91,14 +97,23 @@ const BestSeller = ({ selectedConcern }) => {
         {products.map((product, index) => (
           <Box
             key={product.id}
+            tabIndex={0}
+            onTouchStart={() => setTouchActiveId(product.id)}
+            onTouchEnd={() => setTimeout(() => setTouchActiveId((cur) => (cur === product.id ? null : cur)), 800)}
+            className={touchActiveId === product.id ? 'touchActive' : undefined}
             sx={{
               width: 250,
               mt: 4,
               position: 'relative',
               cursor: 'pointer',
+              outline: 'none',
               animation: `${fadeInUp} 0.5s ease-out ${index * 0.08}s both`,
               '&:hover .productImage': {
                 transform: 'scale(1.06)',
+              },
+              '&:hover .cardOverlay, &:focus-visible .cardOverlay, &.touchActive .cardOverlay': {
+                opacity: 1,
+                transform: 'translateY(0)',
               },
             }}
           >
@@ -107,26 +122,51 @@ const BestSeller = ({ selectedConcern }) => {
                 width: '100%',
                 aspectRatio: '6 / 7',
                 overflow: 'hidden',
+                position: 'relative',
                 animation: `${curtainReveal} 0.9s ease ${index * 0.08}s both`,
               }}
             >
+              {/* 진입 애니메이션(zoomOut)이 transform을 계속 점유해서 호버 확대가 안 먹던 문제 방지용으로
+                  진입 애니메이션은 이 래퍼가, 호버 확대는 안쪽 img가 각각 따로 담당하게 분리 */}
+              <Box sx={{ width: '100%', height: '100%', animation: `${zoomOut} 1.4s ease-out ${index * 0.08}s both` }}>
+                <Box
+                  component="img"
+                  className="productImage"
+                  src={`${import.meta.env.BASE_URL}${product.image}`}
+                  alt={product.name}
+                  onError={(e) => {
+                    e.target.style.display = 'none'
+                  }}
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    bgcolor: '#EDECE7',
+                    objectFit: 'cover',
+                    willChange: 'transform',
+                    transition: 'transform 0.35s ease',
+                  }}
+                />
+              </Box>
+              {/* 호버/포커스 시 올라오는 정보 오버레이 */}
               <Box
-                component="img"
-                className="productImage"
-                src={`${import.meta.env.BASE_URL}${product.image}`}
-                alt={product.name}
-                onError={(e) => {
-                  e.target.style.display = 'none'
-                }}
+                className="cardOverlay"
                 sx={{
-                  width: '100%',
-                  height: '100%',
-                  bgcolor: '#EDECE7',
-                  objectFit: 'cover',
-                  transition: 'transform 0.35s ease',
-                  animation: `${zoomOut} 1.4s ease-out ${index * 0.08}s both`,
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  p: 1.5,
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0) 60%)',
+                  opacity: 0,
+                  transform: 'translateY(6px)',
+                  transition: 'opacity 0.3s ease, transform 0.3s ease',
+                  pointerEvents: 'none',
                 }}
-              />
+              >
+                <Typography sx={{ fontSize: 13, fontWeight: 500, color: 'white', letterSpacing: -0.3 }}>
+                  자세히 보기 →
+                </Typography>
+              </Box>
             </Box>
             {index < 3 && (
   <Box
@@ -220,13 +260,17 @@ const BestSeller = ({ selectedConcern }) => {
           px: 3,
           py: 1,
           border: '1.5px solid #a7aaab',
-          transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s ease, background-color 0.2s ease',
-          '&:hover': {
+          willChange: 'transform',
+          transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s ease, background-color 0.2s ease, background-image 0.3s ease',
+          '&:hover, &:focus-visible': {
             borderColor: 'primary.main',
-            bgcolor: 'primary.main',
+            backgroundImage: 'linear-gradient(135deg, #cdeee0, #7fc9ae)',
           },
-          '&:hover .viewMoreLabel': {
+          '&:hover .viewMoreLabel, &:focus-visible .viewMoreLabel': {
             color: 'white',
+          },
+          '& .MuiTouchRipple-child': {
+            backgroundColor: 'white',
           },
         }}
       >

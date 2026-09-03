@@ -97,7 +97,7 @@ const Hero = () => {
   }
 
   return (
-    <Box component="section" sx={{ position: 'relative', minHeight: 760, pl: '50px', overflowX: 'hidden' }}>
+    <Box component="section" sx={{ position: 'relative', minHeight: 760, pl: '50px', overflow: 'hidden' }}>
       <WaveText text="Dr." direction="left" sx={{ fontSize: 150, fontWeight: 800, mt: '-20px', pointerEvents: 'none' }} />
 
       <Box
