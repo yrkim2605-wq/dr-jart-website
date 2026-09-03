@@ -7,6 +7,7 @@ import ProductReview from './components/sections/ProductReview'
 import  FeaturedProduct from './components/sections/FeaturedProduct'
 import Footer from './components/layout/Footer'
 import Reveal from './components/common/Reveal'
+import CustomCursor from './components/common/CustomCursor'
 
 import { useState } from 'react'
 
@@ -15,6 +16,7 @@ function App() {
 
  return (
     <>
+      <CustomCursor />
       <Header />
       <Hero />
       <Reveal threshold={0.01}><Brand /></Reveal>

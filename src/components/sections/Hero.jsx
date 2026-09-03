@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import AddIcon from '@mui/icons-material/Add'
@@ -86,9 +87,18 @@ const WaveText = ({ text, sx, direction = 'left' }) => (
 )
 
 const Hero = () => {
+  const productStageRef = useRef(null)
+  const [isProductHovered, setIsProductHovered] = useState(false)
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 })
+
+  const handleProductMouseMove = (e) => {
+    const rect = productStageRef.current.getBoundingClientRect()
+    setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+  }
+
   return (
     <Box component="section" sx={{ position: 'relative', minHeight: 760, pl: '50px', overflowX: 'hidden' }}>
-      <WaveText text="Dr." direction="left" sx={{ fontSize: 150, fontWeight: 800, mt: '-20px' }} />
+      <WaveText text="Dr." direction="left" sx={{ fontSize: 150, fontWeight: 800, mt: '-20px', pointerEvents: 'none' }} />
 
       <Box
         sx={{
@@ -98,27 +108,86 @@ const Hero = () => {
           transform: 'translate(-50%, -50%)',
           width: 350,
           height: 321,
+          pointerEvents: 'none',
         }}
       >
-        <Box
-          sx={{
-            width: '100%',
-            height: '100%',
-            transform: 'translateY(-140px) scale(3.5)',
-          }}
-        >
+        <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
           <Box
-            component="img"
-            src={`${import.meta.env.BASE_URL}images/hero-product.png`}
-            alt="시카페어 수딩 컬러 코렉팅 트리트먼트"
             sx={{
               width: '100%',
               height: '100%',
-              objectFit: 'contain',
-              filter: 'drop-shadow(10px 10px 8px rgba(0, 0, 0, 0.25))',
-              animation: `${productFloat} 3.4s ease-in-out 0.5s infinite`,
+              transform: 'translateY(-140px) scale(3.5)',
+              pointerEvents: 'none',
             }}
-          />
+          >
+            <Box
+              component="img"
+              src={`${import.meta.env.BASE_URL}images/hero-product.png`}
+              alt="시카페어 수딩 컬러 코렉팅 트리트먼트"
+              sx={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                filter: 'drop-shadow(10px 10px 8px rgba(0, 0, 0, 0.25))',
+                animation: `${productFloat} 3.4s ease-in-out 0.5s infinite`,
+              }}
+            />
+          </Box>
+
+          {/* 실제 상품(병 실루엣) 영역에만 맞춘 호버 감지 영역 - 이미지의 넓은 투명 여백은 제외 */}
+          <Box
+            ref={productStageRef}
+            data-hide-cursor
+            onMouseMove={handleProductMouseMove}
+            onMouseEnter={() => setIsProductHovered(true)}
+            onMouseLeave={() => setIsProductHovered(false)}
+            sx={{
+              position: 'absolute',
+              left: -25,
+              top: -50,
+              width: 400,
+              height: 360,
+              cursor: 'none',
+              pointerEvents: 'auto',
+            }}
+          >
+            {/* 상품 안에서 커서를 따라다니는 View More 원형 라벨 */}
+            <Box
+              sx={{
+                position: 'absolute',
+                width: 88,
+                height: 88,
+                borderRadius: '50%',
+                bgcolor: 'black',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                pointerEvents: 'none',
+                left: cursorPos.x - 44,
+                top: cursorPos.y - 44,
+                opacity: isProductHovered ? 1 : 0,
+                transform: `scale(${isProductHovered ? 1 : 0.5})`,
+                transition: isProductHovered
+                  ? 'opacity 0.2s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)'
+                  : 'opacity 0.5s ease, transform 0.5s ease',
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  letterSpacing: -0.3,
+                  color: 'white',
+                  textAlign: 'center',
+                  lineHeight: 1.3,
+                }}
+              >
+                VIEW
+                <br />
+                MORE
+              </Typography>
+            </Box>
+          </Box>
         </Box>
 
         {/* 쿨소닉 테크놀로지 안내 문구 + 연결선 (왼쪽, 가로→대각선→가로) */}
@@ -274,7 +343,7 @@ const Hero = () => {
       </Box>
 
       {/* 오른쪽 세로 사이드바: + + | CICAPAIR+ FORMULA 01 REDNESS CARE */}
-      <Box sx={{ position: 'absolute', top: 50, right: 220, display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 1 }}>
+      <Box sx={{ position: 'absolute', top: 50, right: 220, display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 1, pointerEvents: 'none' }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Box
             sx={{
@@ -342,7 +411,7 @@ const Hero = () => {
       </Box>
 
       {/* 왼쪽 하단 브랜드 태그라인 */}
-      <Box sx={{ position: 'absolute', left: '50px', bottom: 55 }}>
+      <Box sx={{ position: 'absolute', left: '50px', bottom: 55, pointerEvents: 'none' }}>
         <Typography sx={{ fontSize: 15, fontWeight: 500 }}>
           <ScrambleText text="Dr.Jart+" startDelay={700} duration={2200} />
         </Typography>
@@ -365,6 +434,7 @@ const Hero = () => {
           position: 'absolute',
           right: 32,
           bottom: 10,
+          pointerEvents: 'none',
         }}
       />
     </Box>

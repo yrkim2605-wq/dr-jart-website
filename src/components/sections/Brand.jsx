@@ -2,12 +2,42 @@ import { useEffect, useRef, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import AddIcon from '@mui/icons-material/Add'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import { keyframes } from '@mui/material/styles'
 import TypingText from '../common/TypingText'
 import ScrambleText from '../common/ScrambleText'
+
+const kenBurns = keyframes`
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+`
+
+const arrowBounce = keyframes`
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+`
+
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`
 
 const Brand = () => {
   const wrapperRef = useRef(null)
   const [stage, setStage] = useState(0)
+  const [isCrossHovered, setIsCrossHovered] = useState(false)
 
   useEffect(() => {
     let ticking = false
@@ -56,7 +86,7 @@ const Brand = () => {
           justifyContent: 'center',
         }}
       >
-        {/* 배경 사진 */}
+        {/* 배경 사진 (천천히 확대되는 켄번즈 효과) */}
         <Box
           sx={{
             position: 'absolute',
@@ -64,8 +94,35 @@ const Brand = () => {
             backgroundImage: `url(${import.meta.env.BASE_URL}images/brand-photo.jpg)`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
+            animation: `${kenBurns} 12s ease-in-out infinite alternate`,
           }}
         />
+
+        {/* 진입 시(스크롤 전) 아래로 스크롤을 유도하는 인디케이터 */}
+        <Box
+          sx={{
+            position: 'absolute',
+            left: '50%',
+            bottom: 40,
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 1,
+            opacity: stage === 0 ? 1 : 0,
+            transition: 'opacity 0.5s ease',
+            pointerEvents: 'none',
+          }}
+        >
+          <Typography sx={{ fontSize: 12, fontWeight: 500, letterSpacing: 2 }}>SCROLL</Typography>
+          <KeyboardArrowDownIcon
+            sx={{
+              fontSize: 28,
+              color: 'white',
+              animation: `${arrowBounce} 1.4s ease-in-out infinite`,
+            }}
+          />
+        </Box>
 
         {/* 텍스트 가독성을 위한 어둡게 처리 (Dr+J+art 등장 이후) */}
         <Box
@@ -142,22 +199,71 @@ const Brand = () => {
           </Typography>
         </Box>
 
-        {/* 우하단 십자가 */}
-        <AddIcon
+        {/* 십자가를 가리키는 CLICK 안내 (호버 전에만 표시) */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 100,
+            right: 40,
+            width: 60,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 0.5,
+            opacity: stage >= 1 && !isCrossHovered ? 1 : 0,
+            transform: stage >= 1 ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.4s ease, transform 0.6s ease',
+            pointerEvents: 'none',
+          }}
+        >
+          <Typography sx={{ fontSize: 12, fontWeight: 500, letterSpacing: 2, color: 'white', whiteSpace: 'nowrap' }}>
+            CLICK
+          </Typography>
+          <KeyboardArrowDownIcon sx={{ fontSize: 22, color: 'white' }} />
+        </Box>
+
+        {/* 우하단 십자가 - 호버 시 왼쪽에 View More가 나타나고 십자가가 회전 */}
+        <Box
+          onMouseEnter={() => setIsCrossHovered(true)}
+          onMouseLeave={() => setIsCrossHovered(false)}
           sx={{
             position: 'absolute',
             bottom: 24,
             right: 40,
-            fontSize: 40,
-            color: 'white',
-            stroke: 'currentColor',
-            strokeWidth: 2.5,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            cursor: 'pointer',
             opacity: stage >= 1 ? 1 : 0,
             transform: stage >= 1 ? 'translateY(0)' : 'translateY(20px)',
             transition: 'opacity 0.6s ease, transform 0.6s ease',
-            pointerEvents: 'none',
+            pointerEvents: stage >= 1 ? 'auto' : 'none',
           }}
-        />
+        >
+          <Typography
+            sx={{
+              fontSize: 20,
+              fontWeight: 500,
+              letterSpacing: -0.3,
+              color: 'white',
+              whiteSpace: 'nowrap',
+              opacity: isCrossHovered ? 1 : 0,
+              transform: isCrossHovered ? 'translateX(0)' : 'translateX(14px)',
+              transition: 'opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}
+          >
+            VIEW MORE
+          </Typography>
+          <AddIcon
+            sx={{
+              fontSize: 60,
+              color: 'white',
+              stroke: 'currentColor',
+              strokeWidth: 2.5,
+              animation: isCrossHovered ? `${spin} 1.1s linear infinite` : 'none',
+            }}
+          />
+        </Box>
 
         {/* Dr + J + art */}
         <Box

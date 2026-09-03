@@ -54,6 +54,17 @@ body {
   margin: 0;
 }
 
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+
+  a,
+  button {
+    cursor: none;
+  }
+}
+
 #root {
   min-height: 100svh;
 }
