@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 
@@ -16,29 +17,116 @@ const REVIEWS = [
 // 무한 스크롤처럼 보이도록 리스트를 두 번 이어붙여서 절반(-50%) 지점에서 끊김 없이 반복
 const STRIP_ITEMS = [...REVIEWS, ...REVIEWS]
 
+// 정상 속도 기준: 절반 폭(halfWidth)을 이 시간(ms) 동안 이동
+const NORMAL_DURATION = 6000
+const HOVER_SPEED_RATIO = 0.3 // 호버 시 정상 속도 대비 배율
+
 const ProductReview = () => {
+  const titleRef = useRef(null)
+  const [started, setStarted] = useState(false)
+
+  const stripRef = useRef(null)
+  const isHoveredRef = useRef(false)
+  const positionRef = useRef(0)
+  const currentSpeedRef = useRef(0)
+
+  useEffect(() => {
+    const el = titleRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.5 },
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const strip = stripRef.current
+    if (!strip) return
+
+    const halfWidth = strip.scrollWidth / 2
+    const normalSpeed = halfWidth / NORMAL_DURATION // px per ms
+    currentSpeedRef.current = normalSpeed
+
+    let frameId
+    let lastTime = performance.now()
+
+    const tick = (now) => {
+      const dt = now - lastTime
+      lastTime = now
+
+      const targetSpeed = isHoveredRef.current ? normalSpeed * HOVER_SPEED_RATIO : normalSpeed
+      currentSpeedRef.current += (targetSpeed - currentSpeedRef.current) * 0.05
+
+      positionRef.current += currentSpeedRef.current * dt
+      if (positionRef.current >= halfWidth) positionRef.current -= halfWidth
+
+      strip.style.transform = `translateX(${-positionRef.current}px)`
+      frameId = requestAnimationFrame(tick)
+    }
+
+    frameId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frameId)
+  }, [])
+
   return (
     <Box component="section" sx={{ pt: 24 }}>
       <Typography sx={{ fontSize: 50, fontWeight: 700, px: 4.5 }}>Dr.jart+</Typography>
-      <Typography sx={{ fontSize: 40, fontWeight: 500, textAlign: 'center', mt: 15 }}>
-        PRODUCT REVIEW
-      </Typography>
-      <Typography sx={{ fontSize: 15, fontWeight: 500, textAlign: 'center', color: 'text.primary', mt: 1.5 }}>
-        수많은 고객들의 현실 리뷰
-      </Typography>
+      <Box ref={titleRef}>
+        <Box sx={{ overflow: 'hidden', mt: 15 }}>
+          <Typography
+            sx={{
+              fontSize: 40,
+              fontWeight: 500,
+              textAlign: 'center',
+              transform: started ? 'translateY(0)' : 'translateY(110%)',
+              transition: 'transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)',
+            }}
+          >
+            PRODUCT REVIEW
+          </Typography>
+        </Box>
+        <Box sx={{ overflow: 'hidden', mt: 1.5 }}>
+          <Typography
+            sx={{
+              fontSize: 15,
+              fontWeight: 500,
+              textAlign: 'center',
+              color: 'text.primary',
+              transform: started ? 'translateY(0)' : 'translateY(110%)',
+              transition: 'transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s',
+            }}
+          >
+            수많은 고객들의 현실 리뷰
+          </Typography>
+        </Box>
+      </Box>
 
-      <Box sx={{ mt: 8, width: '100%', overflow: 'hidden' }}>
+      <Box
+        sx={{ mt: 8, width: '100%', overflow: 'hidden' }}
+        onMouseEnter={() => {
+          isHoveredRef.current = true
+        }}
+        onMouseLeave={() => {
+          isHoveredRef.current = false
+        }}
+      >
         <Box
+          ref={stripRef}
           sx={{
             display: 'flex',
             alignItems: 'center',
             gap: 3,
             width: 'max-content',
-            animation: 'productReviewScroll 9s linear infinite',
-            '@keyframes productReviewScroll': {
-              from: { transform: 'translateX(0)' },
-              to: { transform: 'translateX(-50%)' },
-            },
+            willChange: 'transform',
           }}
         >
           {STRIP_ITEMS.map((review, index) =>

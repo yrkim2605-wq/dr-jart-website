@@ -24,14 +24,27 @@ const arrowSx = {
 }
 
 const navLinkSx = {
-  fontSize: 15,
+  fontSize: 17,
   fontWeight: 500,
   color: 'inherit',
   textDecoration: 'none',
-  transition: 'color 0.2s ease',
+  display: 'inline-block',
+  transition: 'color 0.2s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
   '&:hover': {
     color: 'primary.main',
   },
+}
+
+const handleNavMagnetMove = (e) => {
+  const el = e.currentTarget
+  const rect = el.getBoundingClientRect()
+  const relX = e.clientX - rect.left - rect.width / 2
+  const relY = e.clientY - rect.top - rect.height / 2
+  el.style.transform = `translate(${relX * 0.3}px, ${relY * 0.5}px)`
+}
+
+const handleNavMagnetLeave = (e) => {
+  e.currentTarget.style.transform = 'translate(0px, 0px)'
 }
 
 const iconLinkSx = {
@@ -97,10 +110,10 @@ const Header = () => {
       <Box sx={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', pt: 5, px: 4.5 }}>
         <Typography variant="h1" sx={{ fontWeight: 700, fontSize: 50, margin: 0, color: 'black', justifySelf: 'start' }}>Dr.jart+</Typography>
         <Box sx={{ display: 'flex', gap: 5, justifySelf: 'center' }}>
-          <Typography component="a" href="#" sx={navLinkSx}>PRODUCTS</Typography>
-          <Typography component="a" href="#" sx={navLinkSx}>LAB</Typography>
-          <Typography component="a" href="#" sx={navLinkSx}>BRAND</Typography>
-          <Typography component="a" href="#" sx={navLinkSx}>SEARCH</Typography>
+          <Typography component="a" href="#" onMouseMove={handleNavMagnetMove} onMouseLeave={handleNavMagnetLeave} sx={navLinkSx}>PRODUCTS</Typography>
+          <Typography component="a" href="#" onMouseMove={handleNavMagnetMove} onMouseLeave={handleNavMagnetLeave} sx={navLinkSx}>LAB</Typography>
+          <Typography component="a" href="#" onMouseMove={handleNavMagnetMove} onMouseLeave={handleNavMagnetLeave} sx={navLinkSx}>BRAND</Typography>
+          <Typography component="a" href="#" onMouseMove={handleNavMagnetMove} onMouseLeave={handleNavMagnetLeave} sx={navLinkSx}>SEARCH</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, justifySelf: 'end' }}>
           <Box component="a" href="#" aria-label="장바구니" sx={iconLinkSx}>

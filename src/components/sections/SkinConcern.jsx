@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
@@ -13,17 +14,55 @@ const CONCERNS = [
 ]
 
 const SkinConcern = ({ selectedConcern, onSelectConcern }) => {
+  const titleRef = useRef(null)
+  const [started, setStarted] = useState(false)
+
+  useEffect(() => {
+    const el = titleRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.5 },
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <Box component="section" sx={{ pt: 25 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5 }}>
-        <Typography sx={{ fontSize: 40, fontWeight: 500, textAlign: 'center' }}>
-          What&apos;s your skin concern?
-        </Typography>
+      <Box
+        ref={titleRef}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5 }}
+      >
+        <Box
+          sx={{
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            maxWidth: started ? 700 : 0,
+            transition: 'max-width 2.4s cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+        >
+          <Typography sx={{ fontSize: 40, fontWeight: 500, textAlign: 'center' }}>
+            What&apos;s your skin concern?
+          </Typography>
+        </Box>
         <Box
           component="img"
           src={`${import.meta.env.BASE_URL}images/decor/magnifier.png`}
           alt=""
-          sx={{ width: 40, height: 'auto', transform: 'scaleX(-1)' }}
+          sx={{
+            width: 40,
+            height: 'auto',
+            flexShrink: 0,
+            transform: 'scaleX(-1)',
+          }}
         />
       </Box>
 
@@ -31,11 +70,7 @@ const SkinConcern = ({ selectedConcern, onSelectConcern }) => {
         {CONCERNS.map((concern) => {
           const isSelected = concern.id === selectedConcern
           return (
-            <ButtonBase
-              key={concern.id}
-              onClick={() => onSelectConcern(concern.id)}
-              sx={{ textAlign: 'center', display: 'block' }}
-            >
+            <Box key={concern.id} sx={{ textAlign: 'center' }}>
               <Box
                 sx={{
                   position: 'relative',
@@ -47,36 +82,46 @@ const SkinConcern = ({ selectedConcern, onSelectConcern }) => {
                   },
                 }}
               >
-                <Box
+                <ButtonBase
+                  onClick={() => onSelectConcern(concern.id)}
                   sx={{
                     width: 112,
                     height: 112,
                     borderRadius: '50%',
-                    bgcolor: '#EDECE7',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: concern.mode === 'cover' ? 'hidden' : 'visible',
-                    border: '2px solid',
-                    borderColor: isSelected ? 'primary.main' : 'transparent',
-                    boxSizing: 'border-box',
-                    transition: 'border-color 0.25s ease',
+                    overflow: 'hidden',
                   }}
                 >
                   <Box
-                    component="img"
-                    src={`${import.meta.env.BASE_URL}${concern.image}`}
-                    alt={concern.label}
-                    onError={(e) => {
-                      e.target.style.display = 'none'
+                    sx={{
+                      width: 112,
+                      height: 112,
+                      borderRadius: '50%',
+                      bgcolor: '#EDECE7',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: concern.mode === 'cover' ? 'hidden' : 'visible',
+                      border: '2px solid',
+                      borderColor: isSelected ? 'primary.main' : 'transparent',
+                      boxSizing: 'border-box',
+                      transition: 'border-color 0.25s ease',
                     }}
-                    sx={
-                      concern.mode === 'cover'
-                        ? { width: '100%', height: '100%', objectFit: 'cover' }
-                        : { width: concern.width, height: 'auto', display: 'block' }
-                    }
-                  />
-                </Box>
+                  >
+                    <Box
+                      component="img"
+                      src={`${import.meta.env.BASE_URL}${concern.image}`}
+                      alt={concern.label}
+                      onError={(e) => {
+                        e.target.style.display = 'none'
+                      }}
+                      sx={
+                        concern.mode === 'cover'
+                          ? { width: '100%', height: '100%', objectFit: 'cover' }
+                          : { width: concern.width, height: 'auto', display: 'block' }
+                      }
+                    />
+                  </Box>
+                </ButtonBase>
                 {concern.isNew && (
                   <Box
                     sx={{
@@ -93,6 +138,7 @@ const SkinConcern = ({ selectedConcern, onSelectConcern }) => {
                       justifyContent: 'center',
                       fontSize: 13,
                       fontWeight: 700,
+                      pointerEvents: 'none',
                     }}
                   >
                     N
@@ -100,17 +146,19 @@ const SkinConcern = ({ selectedConcern, onSelectConcern }) => {
                 )}
               </Box>
               <Typography
+                onClick={() => onSelectConcern(concern.id)}
                 sx={{
                   fontSize: 15,
                   mt: 1,
                   fontWeight: isSelected ? 700 : 500,
                   color: isSelected ? 'primary.main' : 'inherit',
+                  cursor: 'pointer',
                   transition: 'color 0.25s ease',
                 }}
               >
                 {concern.label}
               </Typography>
-            </ButtonBase>
+            </Box>
           )
         })}
       </Box>

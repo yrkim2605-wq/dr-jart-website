@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import ButtonBase from '@mui/material/ButtonBase'
@@ -18,14 +19,74 @@ const fadeInUp = keyframes`
   }
 `
 
+// 이미지 박스가 위→아래로 커튼처럼 열리는 리빌
+const curtainReveal = keyframes`
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0% 0); }
+`
+
+// 커튼이 열리는 동안 사진이 확대된 상태에서 서서히 원래 크기로 줌아웃
+const zoomOut = keyframes`
+  from { transform: scale(1.35); }
+  to { transform: scale(1); }
+`
+
 const BestSeller = ({ selectedConcern }) => {
   const products = BEST_SELLER_PRODUCTS[selectedConcern] ?? []
 
+  const titleRef = useRef(null)
+  const [titleStarted, setTitleStarted] = useState(false)
+
+  const magnetRef = useRef(null)
+
+  const handleMagnetMove = (e) => {
+    const el = magnetRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const relX = e.clientX - rect.left - rect.width / 2
+    const relY = e.clientY - rect.top - rect.height / 2
+    el.style.transform = `translate(${relX * 0.3}px, ${relY * 0.4}px)`
+  }
+
+  const handleMagnetLeave = () => {
+    const el = magnetRef.current
+    if (!el) return
+    el.style.transform = 'translate(0px, 0px)'
+  }
+
+  useEffect(() => {
+    const el = titleRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTitleStarted(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.5 },
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <Box component="section" sx={{ pt: 20 }}>
-      <Typography sx={{ fontSize: 40, fontWeight: 500, textAlign: 'center' }}>
-        BEST SELLER
-      </Typography>
+      <Box ref={titleRef} sx={{ overflow: 'hidden' }}>
+        <Typography
+          sx={{
+            fontSize: 40,
+            fontWeight: 500,
+            textAlign: 'center',
+            transform: titleStarted ? 'translateY(0)' : 'translateY(110%)',
+            transition: 'transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+        >
+          BEST SELLER
+        </Typography>
+      </Box>
       <Box key={selectedConcern} sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 2 }}>
         {products.map((product, index) => (
           <Box
@@ -34,18 +95,21 @@ const BestSeller = ({ selectedConcern }) => {
               width: 250,
               mt: 4,
               position: 'relative',
+              cursor: 'pointer',
               animation: `${fadeInUp} 0.5s ease-out ${index * 0.08}s both`,
-              transition: 'transform 0.25s ease, box-shadow 0.25s ease',
-              '&:hover': {
-                transform: 'translateY(-6px)',
-                boxShadow: '0 12px 24px rgba(0, 0, 0, 0.12)',
-              },
               '&:hover .productImage': {
                 transform: 'scale(1.06)',
               },
             }}
           >
-            <Box sx={{ width: '100%', aspectRatio: '6 / 7', overflow: 'hidden' }}>
+            <Box
+              sx={{
+                width: '100%',
+                aspectRatio: '6 / 7',
+                overflow: 'hidden',
+                animation: `${curtainReveal} 0.9s ease ${index * 0.08}s both`,
+              }}
+            >
               <Box
                 component="img"
                 className="productImage"
@@ -60,6 +124,7 @@ const BestSeller = ({ selectedConcern }) => {
                   bgcolor: '#EDECE7',
                   objectFit: 'cover',
                   transition: 'transform 0.35s ease',
+                  animation: `${zoomOut} 1.4s ease-out ${index * 0.08}s both`,
                 }}
               />
             </Box>
@@ -145,6 +210,9 @@ const BestSeller = ({ selectedConcern }) => {
       </Box>
 
       <ButtonBase
+        ref={magnetRef}
+        onMouseMove={handleMagnetMove}
+        onMouseLeave={handleMagnetLeave}
         sx={{
           display: 'block',
           mx: 'auto',
@@ -152,7 +220,7 @@ const BestSeller = ({ selectedConcern }) => {
           px: 3,
           py: 1,
           border: '1.5px solid #a7aaab',
-          transition: 'border-color 0.2s ease, background-color 0.2s ease',
+          transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s ease, background-color 0.2s ease',
           '&:hover': {
             borderColor: 'primary.main',
             bgcolor: 'primary.main',

@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import AddIcon from '@mui/icons-material/Add'
 import TypingText from '../common/TypingText'
+import ScrambleText from '../common/ScrambleText'
 
 const Brand = () => {
   const wrapperRef = useRef(null)
@@ -109,13 +110,13 @@ const Brand = () => {
           }}
         >
           <Typography sx={{ fontSize: 14, fontWeight: 400 }}>
-            <TypingText lines={['LAB 01']} start={stage >= 1} startDelay={0} />
+            <ScrambleText text="LAB 01" start={stage >= 1} startDelay={0} duration={700} />
           </Typography>
           <Typography sx={{ fontSize: 14, fontWeight: 400, mt: 5 }}>
-            <TypingText lines={['DERMATOLOGY']} start={stage >= 1} startDelay={300} />
+            <ScrambleText text="DERMATOLOGY" start={stage >= 1} startDelay={250} duration={700} />
           </Typography>
           <Typography sx={{ fontSize: 14, fontWeight: 400, mt: 2 }}>
-            <TypingText lines={['SKIN ANALYSIS']} start={stage >= 1} startDelay={600} />
+            <ScrambleText text="SKIN ANALYSIS" start={stage >= 1} startDelay={500} duration={700} />
           </Typography>
         </Box>
 
@@ -132,7 +133,12 @@ const Brand = () => {
           }}
         >
           <Typography sx={{ fontSize: 14, fontWeight: 400 }}>
-            <TypingText lines={['FORMULA 01', 'SKIN RESEARCH']} start={stage >= 1} />
+            <Box component="span" sx={{ display: 'block' }}>
+              <ScrambleText text="FORMULA 01" start={stage >= 1} duration={700} />
+            </Box>
+            <Box component="span" sx={{ display: 'block' }}>
+              <ScrambleText text="SKIN RESEARCH" start={stage >= 1} startDelay={250} duration={700} />
+            </Box>
           </Typography>
         </Box>
 
@@ -205,7 +211,15 @@ const Brand = () => {
             pointerEvents: 'none',
           }}
         >
-          <Typography sx={{ fontSize: 48, fontWeight: 700 }}>
+          <Typography
+            sx={{
+              fontSize: 48,
+              fontWeight: 700,
+              filter: stage === 2 ? 'blur(0px)' : 'blur(12px)',
+              letterSpacing: stage === 2 ? 'normal' : '0.2em',
+              transition: 'filter 1s ease, letter-spacing 1s ease',
+            }}
+          >
             &apos;Doctor Joins Art&apos;{' '}
             <Box component="span" sx={{ color: 'primary.main' }}>
               의학과 예술의 만남

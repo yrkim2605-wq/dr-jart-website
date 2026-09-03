@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import AddIcon from '@mui/icons-material/Add'
 import { keyframes } from '@mui/material/styles'
-import TypingText from '../common/TypingText'
+import ScrambleText from '../common/ScrambleText'
 
 const wave = keyframes`
   0%, 60%, 100% {
@@ -87,8 +87,8 @@ const WaveText = ({ text, sx, direction = 'left' }) => (
 
 const Hero = () => {
   return (
-    <Box component="section" sx={{ position: 'relative', minHeight: 900, pl: '50px', overflowX: 'hidden' }}>
-      <WaveText text="Dr." direction="left" sx={{ fontSize: 150, fontWeight: 800 }} />
+    <Box component="section" sx={{ position: 'relative', minHeight: 760, pl: '50px', overflowX: 'hidden' }}>
+      <WaveText text="Dr." direction="left" sx={{ fontSize: 150, fontWeight: 800, mt: '-20px' }} />
 
       <Box
         sx={{
@@ -133,7 +133,12 @@ const Hero = () => {
             textAlign: 'left',
           }}
         >
-          <TypingText lines={['쿨소닉 테크놀로지가', '결합된 CICAPAIR']} startDelay={300} />
+          <Box component="span" sx={{ display: 'block' }}>
+            <ScrambleText text="쿨소닉 테크놀로지가" startDelay={300} duration={1400} />
+          </Box>
+          <Box component="span" sx={{ display: 'block' }}>
+            <ScrambleText text="결합된 CICAPAIR" startDelay={900} duration={1400} />
+          </Box>
         </Typography>
         <Box
           component="svg"
@@ -215,7 +220,12 @@ const Hero = () => {
             textAlign: 'right',
           }}
         >
-          <TypingText lines={['1회 사용으로 민감해진', '피부를 빠르게 진정']} startDelay={500} />
+          <Box component="span" sx={{ display: 'block' }}>
+            <ScrambleText text="1회 사용으로 민감해진" startDelay={500} duration={1400} />
+          </Box>
+          <Box component="span" sx={{ display: 'block' }}>
+            <ScrambleText text="피부를 빠르게 진정" startDelay={1100} duration={1400} />
+          </Box>
         </Typography>
         <Box
           component="svg"
@@ -264,7 +274,7 @@ const Hero = () => {
       </Box>
 
       {/* 오른쪽 세로 사이드바: + + | CICAPAIR+ FORMULA 01 REDNESS CARE */}
-      <Box sx={{ position: 'absolute', top: 110, right: 220, display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 1 }}>
+      <Box sx={{ position: 'absolute', top: 50, right: 220, display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 1 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Box
             sx={{
@@ -332,15 +342,17 @@ const Hero = () => {
       </Box>
 
       {/* 왼쪽 하단 브랜드 태그라인 */}
-      <Box sx={{ position: 'absolute', left: '50px', bottom: 80 }}>
+      <Box sx={{ position: 'absolute', left: '50px', bottom: 55 }}>
         <Typography sx={{ fontSize: 15, fontWeight: 500 }}>
-          <TypingText lines={['Dr.Jart+']} startDelay={700} />
+          <ScrambleText text="Dr.Jart+" startDelay={700} duration={2200} />
         </Typography>
         <Typography sx={{ fontSize: 13, fontWeight: 500, mt: 3 }}>
-          <TypingText
-            lines={['KOREAN SKIN BARRIER EXPERTS.', 'DREAM INSPIRED. ARTFULLY DELIVERED.']}
-            startDelay={1000}
-          />
+          <Box component="span" sx={{ display: 'block' }}>
+            <ScrambleText text="KOREAN SKIN BARRIER EXPERTS." startDelay={2000} duration={2600} />
+          </Box>
+          <Box component="span" sx={{ display: 'block' }}>
+            <ScrambleText text="DREAM INSPIRED. ARTFULLY DELIVERED." startDelay={2900} duration={2600} />
+          </Box>
         </Typography>
       </Box>
 
@@ -352,7 +364,7 @@ const Hero = () => {
           fontWeight: 800,
           position: 'absolute',
           right: 32,
-          bottom: 32,
+          bottom: 10,
         }}
       />
     </Box>

@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import ButtonBase from '@mui/material/ButtonBase'
+import ScrambleText from '../common/ScrambleText'
 
 // image가 도착하기 전까지는 회색 박스로 표시됨
 const BANNERS = [
@@ -43,34 +44,144 @@ const BANNERS = [
 ]
 
 const SLIDE_INTERVAL_MS = 4000
+const DRAG_THRESHOLD_PX = 60
 
 const FeaturedProduct = () => {
   const [activeIndex, setActiveIndex] = useState(0)
+  const titleRef = useRef(null)
+  const [started, setStarted] = useState(false)
+
+  const [dragDeltaPx, setDragDeltaPx] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const isDraggingRef = useRef(false)
+  const dragStartXRef = useRef(0)
+  const dragDeltaRef = useRef(0)
+  const carouselRef = useRef(null)
+
+  const handleSpotlightMove = (e) => {
+    const el = carouselRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const relX = ((e.clientX - rect.left) / rect.width) * 100
+    const relY = ((e.clientY - rect.top) / rect.height) * 100
+    el.style.setProperty('--spot-x', `${relX}%`)
+    el.style.setProperty('--spot-y', `${relY}%`)
+  }
 
   useEffect(() => {
     const timer = setInterval(() => {
+      if (isDraggingRef.current) return
       setActiveIndex((prev) => (prev + 1) % BANNERS.length)
     }, SLIDE_INTERVAL_MS)
     return () => clearInterval(timer)
   }, [])
 
+  const handlePointerDown = (e) => {
+    isDraggingRef.current = true
+    setIsDragging(true)
+    dragStartXRef.current = e.clientX
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+
+  const handlePointerMove = (e) => {
+    if (!isDraggingRef.current) return
+    const delta = e.clientX - dragStartXRef.current
+    dragDeltaRef.current = delta
+    setDragDeltaPx(delta)
+  }
+
+  const endDrag = () => {
+    if (!isDraggingRef.current) return
+    isDraggingRef.current = false
+    setIsDragging(false)
+
+    const delta = dragDeltaRef.current
+    if (delta <= -DRAG_THRESHOLD_PX) {
+      setActiveIndex((prev) => (prev + 1) % BANNERS.length)
+    } else if (delta >= DRAG_THRESHOLD_PX) {
+      setActiveIndex((prev) => (prev - 1 + BANNERS.length) % BANNERS.length)
+    }
+
+    dragDeltaRef.current = 0
+    setDragDeltaPx(0)
+  }
+
+  useEffect(() => {
+    const el = titleRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.5 },
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <Box component="section" sx={{ pt: 60 }}>
-      <Typography sx={{ fontSize: 40, fontWeight: 500, textAlign: 'center' }}>
-        FEATURED PRODUCT
-      </Typography>
+      <Box ref={titleRef} sx={{ overflow: 'hidden' }}>
+        <Typography
+          sx={{
+            fontSize: 40,
+            fontWeight: 500,
+            textAlign: 'center',
+            transform: started ? 'translateY(0)' : 'translateY(110%)',
+            transition: 'transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+        >
+          FEATURED PRODUCT
+        </Typography>
+      </Box>
 
-      <Box sx={{ position: 'relative', mt: 6, width: '100%', aspectRatio: '2.5 / 1', overflow: 'hidden' }}>
+      <Box
+        ref={carouselRef}
+        sx={{
+          position: 'relative',
+          mt: 6,
+          width: '100%',
+          aspectRatio: '2.5 / 1',
+          overflow: 'hidden',
+          cursor: 'pointer',
+          touchAction: 'pan-y',
+          clipPath: started ? 'inset(0 0 0% 0)' : 'inset(0 0 100% 0)',
+          transition: 'clip-path 1s cubic-bezier(0.22, 1, 0.36, 1)',
+          '&:hover .spotlight': {
+            opacity: 1,
+          },
+        }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={endDrag}
+        onPointerLeave={endDrag}
+        onPointerCancel={endDrag}
+        onMouseMove={handleSpotlightMove}
+      >
+        <Box
+          sx={{
+            width: '100%',
+            height: '100%',
+            transform: started ? 'scale(1)' : 'scale(1.3)',
+            transition: 'transform 1.6s ease-out',
+          }}
+        >
         <Box
           sx={{
             display: 'flex',
             width: '100%',
             height: '100%',
-            transform: `translateX(-${activeIndex * 100}%)`,
-            transition: 'transform 0.6s ease',
+            transform: `translateX(calc(-${activeIndex * 100}% + ${dragDeltaPx}px))`,
+            transition: isDragging ? 'none' : 'transform 0.6s ease',
+            userSelect: 'none',
           }}
         >
-          {BANNERS.map((banner) => (
+          {BANNERS.map((banner, bannerIndex) => (
             <Box
               key={banner.id}
               sx={{
@@ -100,9 +211,18 @@ const FeaturedProduct = () => {
                 </Typography>
                 {banner.description && (
                   <Typography sx={{ fontSize: 13, fontWeight: 500, color: 'text.primary', mt: 2, lineHeight: 1.6 }}>
-                    {banner.description.map((line) => (
-                      <Box key={line} component="span" sx={{ display: 'block' }}>
-                        {line}
+                    {banner.description.map((line, lineIndex) => (
+                      <Box
+                        key={`${line}-${activeIndex === bannerIndex}`}
+                        component="span"
+                        sx={{ display: 'block' }}
+                      >
+                        <ScrambleText
+                          text={line}
+                          start={activeIndex === bannerIndex}
+                          startDelay={lineIndex * 400}
+                          duration={1400}
+                        />
                       </Box>
                     ))}
                   </Typography>
@@ -147,6 +267,21 @@ const FeaturedProduct = () => {
             </Box>
           ))}
         </Box>
+        </Box>
+
+        <Box
+          className="spotlight"
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+            opacity: 0,
+            transition: 'opacity 0.4s ease',
+            mixBlendMode: 'overlay',
+            background:
+              'radial-gradient(circle 280px at var(--spot-x, 50%) var(--spot-y, 50%), rgba(255,255,255,0.55), transparent 70%)',
+          }}
+        />
       </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 2 }}>
@@ -160,6 +295,7 @@ const FeaturedProduct = () => {
               height: 8,
               borderRadius: '50%',
               bgcolor: index === activeIndex ? 'text.primary' : '#D9D9D9',
+              cursor: 'pointer',
               transition: 'background-color 0.3s ease',
             }}
           />

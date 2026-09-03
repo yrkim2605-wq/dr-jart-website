@@ -1,3 +1,4 @@
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import ButtonBase from '@mui/material/ButtonBase'
@@ -32,15 +33,120 @@ const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
+// 로고가 아래로 내려오는 연출 기준값
+// 숨는 위치(hiddenY)는 글자 실제 높이만큼 위로 올려서 완전히 안 보이게, 렌더 후 측정해서 계산함
+const LOGO_HIDDEN_Y_FALLBACK = -3000
+const LOGO_FINAL_Y = -75
+const LOGO_FINAL_X = -34
+const LOGO_HIDE_BUFFER = 40
+
 const Footer = () => {
+  const revealRef = useRef(null)
+  const [started, setStarted] = useState(false)
+
+  const logoWrapRef = useRef(null)
+  const logoTypoRef = useRef(null)
+  const [logoStarted, setLogoStarted] = useState(false)
+  const [logoHiddenY, setLogoHiddenY] = useState(LOGO_HIDDEN_Y_FALLBACK)
+
+  const topBtnMagnetRef = useRef(null)
+
+  const handleTopBtnMagnetMove = (e) => {
+    const el = topBtnMagnetRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const relX = e.clientX - rect.left - rect.width / 2
+    const relY = e.clientY - rect.top - rect.height / 2
+    el.style.transform = `translate(${relX * 0.35}px, ${relY * 0.35}px)`
+  }
+
+  const handleTopBtnMagnetLeave = () => {
+    const el = topBtnMagnetRef.current
+    if (!el) return
+    el.style.transform = 'translate(0px, 0px)'
+  }
+
+  useEffect(() => {
+    const el = revealRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 },
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  useLayoutEffect(() => {
+    const typo = logoTypoRef.current
+    if (!typo) return
+    setLogoHiddenY(LOGO_FINAL_Y - typo.getBoundingClientRect().height - LOGO_HIDE_BUFFER)
+  }, [])
+
+  useEffect(() => {
+    const el = logoWrapRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setLogoStarted(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.15 },
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <Box component="footer" sx={{ bgcolor: 'black', color: 'white', mt: 20 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 6, px: 6, pt: 10, pb: 8 }}>
-        <Box sx={{ maxWidth: 640, display: 'flex', flexDirection: 'column' }}>
+      <Box ref={revealRef} sx={{ display: 'flex', justifyContent: 'space-between', gap: 6, px: 6, pt: 10, pb: 8 }}>
+        <Box
+          sx={{
+            maxWidth: 640,
+            display: 'flex',
+            flexDirection: 'column',
+            opacity: started ? 1 : 0,
+            transform: started ? 'translateY(0)' : 'translateY(24px)',
+            transition: 'opacity 0.7s ease, transform 0.7s ease',
+          }}
+        >
           <Typography sx={{ fontSize: 150, fontWeight: 900, lineHeight: 1 }}>MASK</Typography>
           <Typography sx={{ fontSize: 40, fontWeight: 900, lineHeight: 1.3, mt: 1 }}>
-            <Box component="span" sx={{ display: 'block' }}>피부고민별 피부타입을</Box>
-            <Box component="span" sx={{ display: 'block' }}>위한 혁신적인 마스크</Box>
+            <Box component="span" sx={{ display: 'block', overflow: 'hidden' }}>
+              <Box
+                component="span"
+                sx={{
+                  display: 'block',
+                  transform: started ? 'translateY(0)' : 'translateY(110%)',
+                  transition: 'transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s',
+                }}
+              >
+                피부고민별 피부타입을
+              </Box>
+            </Box>
+            <Box component="span" sx={{ display: 'block', overflow: 'hidden' }}>
+              <Box
+                component="span"
+                sx={{
+                  display: 'block',
+                  transform: started ? 'translateY(0)' : 'translateY(110%)',
+                  transition: 'transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.22s',
+                }}
+              >
+                위한 혁신적인 마스크
+              </Box>
+            </Box>
           </Typography>
 
           <Typography sx={{ fontSize: 13, fontWeight: 400, color: 'white', mt: 4 }}>
@@ -73,20 +179,34 @@ const Footer = () => {
         </Box>
 
         <Box sx={{ display: 'flex', gap: 3 }}>
-          {MASK_PRODUCTS.map((product) => (
+          {MASK_PRODUCTS.map((product, index) => (
             <Box
               key={product.id}
               sx={{
                 width: 360,
                 aspectRatio: '3 / 4',
-                bgcolor: '#1A1A1A',
-                ...(product.image && {
-                  backgroundImage: `url(${import.meta.env.BASE_URL}${product.image})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }),
+                position: 'relative',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                clipPath: started ? 'inset(0% 0 0% 0)' : 'inset(0% 0 100% 0)',
+                transition: `clip-path 1s cubic-bezier(0.22, 1, 0.36, 1) ${0.15 + index * 0.1}s`,
               }}
-            />
+            >
+              <Box
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  bgcolor: '#1A1A1A',
+                  transform: started ? 'scale(1)' : 'scale(1.3)',
+                  transition: `transform 1.6s ease-out ${0.15 + index * 0.1}s`,
+                  ...(product.image && {
+                    backgroundImage: `url(${import.meta.env.BASE_URL}${product.image})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }),
+                }}
+              />
+            </Box>
           ))}
         </Box>
       </Box>
@@ -108,8 +228,9 @@ const Footer = () => {
         </Box>
       </Box>
 
-      <Box sx={{ overflow: 'hidden', bgcolor: 'white' }}>
+      <Box ref={logoWrapRef} sx={{ overflow: 'hidden', bgcolor: 'white' }}>
         <Typography
+          ref={logoTypoRef}
           sx={{
             fontSize: '27.8vw',
             fontWeight: 900,
@@ -119,7 +240,10 @@ const Footer = () => {
             whiteSpace: 'nowrap',
             letterSpacing: '-0.02em',
             ml: '-0.03em',
-            transform: 'translate(-34px, -75px)',
+            transform: logoStarted
+              ? `translate(${LOGO_FINAL_X}px, ${LOGO_FINAL_Y}px)`
+              : `translate(${LOGO_FINAL_X}px, ${logoHiddenY}px)`,
+            transition: 'transform 1.8s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
         >
           Dr.jart+
@@ -127,6 +251,9 @@ const Footer = () => {
       </Box>
 
       <ButtonBase
+        ref={topBtnMagnetRef}
+        onMouseMove={handleTopBtnMagnetMove}
+        onMouseLeave={handleTopBtnMagnetLeave}
         onClick={scrollToTop}
         aria-label="맨 위로 이동"
         sx={{
@@ -144,6 +271,7 @@ const Footer = () => {
           gap: 0.2,
           zIndex: 1000,
           boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
+          transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
         }}
       >
         <Box component="svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" sx={{ width: 20, height: 20 }}>
